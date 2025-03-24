@@ -1,164 +1,28 @@
 const socket = io();
+
 let startTime = null;
 let timerInterval = null;
 let historyData = [];
 let activeCalls = [];
 
-const username = new URLSearchParams(window.location.search).get("user") || localStorage.getItem("loggedInUser") || "user1";
+const username =
+  new URLSearchParams(window.location.search).get("user") ||
+  localStorage.getItem("loggedInUser") ||
+  "user1";
+
 document.getElementById("username").innerText = username;
+socket.emit("join", username);
 
-// Notificações
-function notify(msg) {
-  const box = document.getElementById("notifications");
-  const el = document.createElement("div");
-  el.className = "notification";
-  el.innerText = msg;
-  box.appendChild(el);
-  setTimeout(() => el.remove(), 4000);
+// Dark mode
+const themeToggle = document.getElementById("toggleThemeBtn");
+if (themeToggle) {
+  themeToggle.onclick = () => {
+    document.body.classList.toggle("dark-theme");
+    localStorage.setItem("theme", document.body.classList.contains("dark-theme") ? "dark" : "light");
+  };
 }
-
-// Timer
-function updateTimer() {
-  const now = new Date();
-  const elapsed = new Date(now - startTime);
-  const min = elapsed.getUTCMinutes().toString().padStart(2, "0");
-  const sec = elapsed.getUTCSeconds().toString().padStart(2, "0");
-  document.getElementById("timerDisplay").innerText = `Tempo: ${min}:${sec}`;
-}
-
-// Iniciar chamada
-document.getElementById("startBtn").addEventListener("click", () => {
-  const client = document.getElementById("clientName").value.trim() || "Sem cliente";
-  startTime = new Date();
-  timerInterval = setInterval(updateTimer, 1000);
-  document.getElementById("startBtn").disabled = true;
-  document.getElementById("endBtn").disabled = false;
-  document.getElementById("statusDisplay").innerText = "Chamada em andamento...";
-  socket.emit("startCall", { username, client, start: startTime });
-  notify(`Chamada iniciada com ${client}`);
-});
-
-// Terminar chamada
-document.getElementById("endBtn").addEventListener("click", () => {
-  clearInterval(timerInterval);
-  const endTime = new Date();
-  const client = document.getElementById("clientName").value.trim() || "Sem cliente";
-  document.getElementById("startBtn").disabled = false;
-  document.getElementById("endBtn").disabled = true;
-  document.getElementById("statusDisplay").innerText = "Nenhuma chamada ativa";
-  document.getElementById("timerDisplay").innerText = "";
-  socket.emit("endCall", { username, client, end: endTime });
-  notify(`Chamada terminada com ${client}`);
-});
-
-// Online users
-socket.on("updateOnlineUsers", (users) => {
-  const list = document.getElementById("onlineList");
-  list.innerHTML = "";
-  users.forEach((u) => {
-    const li = document.createElement("li");
-    li.innerText = u;
-    list.appendChild(li);
-  });
-});
-
-// Histórico recebido
-socket.on("updateHistory", (history) => {
-  historyData = history;
-  renderHistory();
-  updateUserFilterOptions();
-});
-
-// Lista de chamadas ativas ao vivo
-socket.on("updateActiveCalls", (calls) => {
-  activeCalls = calls;
-  const list = document.getElementById("activeCallsList");
-  list.innerHTML = "";
-  if (activeCalls.length === 0) {
-    list.innerHTML = "<li>Nenhuma chamada ativa</li>";
-  } else {
-    activeCalls.forEach(call => {
-      const li = document.createElement("li");
-      li.innerText = `${call.username} com ${call.client}`;
-      list.appendChild(li);
-    });
-  }
-});
-
-// Limpar histórico visual
-document.getElementById("clearVisualHistory").addEventListener("click", () => {
-  document.getElementById("historyList").innerHTML = "";
-});
-
-// Exportar CSV
-document.getElementById("exportBtn").addEventListener("click", () => {
-  let csv = "Utilizador,Cliente,Início,Fim\n";
-  historyData.forEach(item => {
-    const start = item.start ? new Date(item.start).toLocaleString() : "--";
-    const end = item.end ? new Date(item.end).toLocaleString() : "--";
-    const client = item.client || "Sem cliente";
-    csv += `${item.username},${client},${start},${end}\n`;
-  });
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "historico_chamadas.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-});
-
-// Aplicar filtro (botão)
-document.getElementById("applyFilterBtn").addEventListener("click", renderHistory);
-
-function renderHistory() {
-  const userFilter = document.getElementById("filterUser").value;
-  const list = document.getElementById("historyList");
-  list.innerHTML = "";
-
-  historyData
-    .filter(item => !userFilter || item.username === userFilter)
-    .forEach(item => {
-      const start = item.start ? new Date(item.start).toLocaleTimeString() : "--";
-      const end = item.end ? new Date(item.end).toLocaleTimeString() : "--";
-      const client = item.client || "Sem cliente";
-      const li = document.createElement("li");
-      li.innerText = `${item.username} com ${client} - ${start} → ${end}`;
-      list.appendChild(li);
-    });
-}
-
-function updateUserFilterOptions() {
-  const select = document.getElementById("filterUser");
-  const uniqueUsers = [...new Set(historyData.map(h => h.username))];
-  select.innerHTML = '<option value="">Todos</option>';
-  uniqueUsers.forEach(user => {
-    const opt = document.createElement("option");
-    opt.value = user;
-    opt.text = user;
-    select.appendChild(opt);
-  });
-}
-
-// Estado
-document.getElementById("userStatus").addEventListener("change", (e) => {
-  const status = e.target.value;
-  const tag = document.getElementById("status-indicator");
-  tag.innerText = status === "ocupado" ? "🔴 ocupado" : "🟢 disponível";
-  socket.emit("updateStatus", { username, status });
-});
-
-// Tema escuro
-const toggleThemeBtn = document.getElementById("toggleThemeBtn");
-toggleThemeBtn.addEventListener("click", () => {
-  document.body.classList.toggle("dark-theme");
-  const isDark = document.body.classList.contains("dark-theme");
-  localStorage.setItem("theme", isDark ? "dark" : "light");
-  toggleThemeBtn.textContent = isDark ? "☀️" : "🌙";
-});
 if (localStorage.getItem("theme") === "dark") {
   document.body.classList.add("dark-theme");
-  toggleThemeBtn.textContent = "☀️";
 }
 
 // Logout
@@ -167,31 +31,175 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   window.location.href = "login.html";
 });
 
-// Apagar histórico
-document.getElementById("deleteHistory").addEventListener("click", () => {
-  if (confirm("Tens a certeza que queres eliminar o histórico de chamadas?")) {
-    fetch("/api/delete-history", { method: "DELETE" })
-      .then(res => {
-        if (res.ok) {
-          historyData = [];
-          renderHistory();
-          notify("Histórico eliminado com sucesso.");
-        }
-      });
+// Iniciar chamada
+document.getElementById("startBtn").addEventListener("click", () => {
+  const client = document.getElementById("clientName").value || "Sem cliente";
+  startTime = new Date();
+  document.getElementById("statusDisplay").innerText = `Em chamada com ${client}`;
+  document.getElementById("startBtn").disabled = true;
+  document.getElementById("endBtn").disabled = false;
+
+  socket.emit("startCall", { username, client, start: startTime });
+
+  timerInterval = setInterval(() => {
+    const now = new Date();
+    const diff = Math.floor((now - startTime) / 1000);
+    const mins = Math.floor(diff / 60);
+    const secs = diff % 60;
+    document.getElementById("timerDisplay").innerText = `${mins}m ${secs}s`;
+  }, 1000);
+});
+
+// Terminar chamada
+document.getElementById("endBtn").addEventListener("click", () => {
+  const end = new Date();
+  const client = document.getElementById("clientName").value || "Sem cliente";
+  socket.emit("endCall", { username, client, start: startTime, end });
+
+  clearInterval(timerInterval);
+  document.getElementById("timerDisplay").innerText = "";
+  document.getElementById("statusDisplay").innerText = "Nenhuma chamada ativa";
+  document.getElementById("startBtn").disabled = false;
+  document.getElementById("endBtn").disabled = true;
+});
+
+// Atualizar estado
+document.getElementById("userStatus").addEventListener("change", (e) => {
+  const status = e.target.value;
+  document.getElementById("status-indicator").innerText = `🟢 ${status}`;
+  socket.emit("updateStatus", { username, status });
+});
+
+// Exportar CSV
+document.getElementById("exportBtn").addEventListener("click", () => {
+  if (!historyData.length) return alert("Sem dados para exportar");
+
+  let csv = "Utilizador,Cliente,Início,Fim\n";
+  historyData.forEach(c => {
+    const start = new Date(c.start).toLocaleString();
+    const end = new Date(c.end).toLocaleString();
+    csv += `${c.username},${c.client},${start},${end}\n`;
+  });
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "historico_chamadas.csv";
+  a.click();
+});
+
+// Apagar histórico (definitivo)
+document.getElementById("deleteHistory").addEventListener("click", async () => {
+  if (confirm("Apagar histórico permanentemente?")) {
+    await fetch("/api/delete-history", { method: "DELETE" });
+    historyData = [];
+    renderHistory([]);
   }
 });
 
-// Recuperar histórico
-document.getElementById("recoverHistory").addEventListener("click", () => {
-  fetch("/api/load-history")
-    .then(res => res.json())
-    .then(data => {
-      historyData = data;
-      renderHistory();
-      updateUserFilterOptions();
-      notify("Histórico recuperado com sucesso.");
-    });
+// Recuperar histórico do servidor
+document.getElementById("recoverHistory").addEventListener("click", async () => {
+  const res = await fetch("/api/load-history");
+  const data = await res.json();
+  historyData = data;
+  renderHistory(data);
 });
 
-// Iniciar app
-socket.emit("join", username);
+// Limpar da tela (visual apenas)
+document.getElementById("clearVisualHistory").addEventListener("click", () => {
+  document.getElementById("historyList").innerHTML = "";
+});
+
+// Aplicar filtro de histórico
+document.getElementById("applyFilterBtn").addEventListener("click", () => {
+  const selectedUser = document.getElementById("filterUser").value;
+  const filtered = selectedUser
+    ? historyData.filter(item => item.username === selectedUser)
+    : historyData;
+  renderHistory(filtered);
+});
+
+// Renderizar histórico
+function renderHistory(data) {
+  const list = document.getElementById("historyList");
+  list.innerHTML = "";
+  const usersSet = new Set();
+
+  data.forEach(item => {
+    const li = document.createElement("li");
+    const start = item.start ? new Date(item.start).toLocaleString() : "Desconhecido";
+    const end = item.end ? new Date(item.end).toLocaleString() : "Desconhecido";
+    li.textContent = `${item.username} - ${item.client} → ${start} → ${end}`;
+    list.appendChild(li);
+    usersSet.add(item.username);
+  });
+
+  const filter = document.getElementById("filterUser");
+  filter.innerHTML = '<option value="">Todos</option>';
+  usersSet.forEach(u => {
+    const opt = document.createElement("option");
+    opt.value = opt.textContent = u;
+    filter.appendChild(opt);
+  });
+}
+
+// Atualizações em tempo real
+socket.on("updateHistory", (data) => {
+  historyData = data;
+  renderHistory(data);
+});
+
+socket.on("updateOnlineUsers", (users) => {
+  const list = document.getElementById("onlineList");
+  list.innerHTML = "";
+  users.forEach(user => {
+    const li = document.createElement("li");
+    li.textContent = user;
+    list.appendChild(li);
+  });
+});
+
+socket.on("updateActiveCalls", (calls) => {
+  activeCalls = calls;
+  const list = document.getElementById("activeCallsList");
+  list.innerHTML = "";
+  calls.forEach(call => {
+    const li = document.createElement("li");
+    li.textContent = `${call.username} com ${call.client}`;
+    list.appendChild(li);
+  });
+});
+
+// Notificações
+socket.on("notify", (msg) => {
+  const note = document.createElement("div");
+  note.className = "notification";
+  note.textContent = msg;
+  const container = document.getElementById("notifications");
+  container.appendChild(note);
+  setTimeout(() => container.removeChild(note), 5000);
+});
+
+// Chat
+const chatForm = document.getElementById("chatForm");
+const chatInput = document.getElementById("chatInput");
+const chatMessages = document.getElementById("chatMessages");
+
+if (chatForm) {
+  chatForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const msg = chatInput.value.trim();
+    if (msg) {
+      socket.emit("chatMessage", { username, message: msg });
+      chatInput.value = "";
+    }
+  });
+
+  socket.on("chatMessage", (data) => {
+    const el = document.createElement("div");
+    el.className = "chat-message";
+    el.innerHTML = `<strong>${data.username}</strong>: ${data.message}`;
+    chatMessages.appendChild(el);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  });
+}

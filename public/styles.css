@@ -19,12 +19,12 @@ body {
   color: var(--text);
 }
 
-/* APP LAYOUT ESTILO SLACK */
 .app-layout {
   display: flex;
   height: 100vh;
   overflow: hidden;
 }
+
 .sidebar {
   width: 240px;
   background: var(--primary);
@@ -33,6 +33,7 @@ body {
   flex-direction: column;
   padding: 1rem;
 }
+
 .sidebar-logo {
   display: flex;
   align-items: center;
@@ -45,6 +46,7 @@ body {
   font-size: 1.3rem;
   margin: 0;
 }
+
 .sidebar-menu {
   margin-top: 2rem;
   display: flex;
@@ -229,58 +231,37 @@ body.dark-theme .footer {
   border-top: 1px solid #374151;
 }
 
-/* LOGIN & REGISTO */
-.login-container {
-  max-width: 400px;
-  margin: 80px auto;
+/* CHAT */
+#chatMessages {
+  max-height: 300px;
+  overflow-y: auto;
   background: var(--card-bg);
-  padding: 2.5rem;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  text-align: center;
-}
-.login-logo {
-  height: 64px;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
   margin-bottom: 1rem;
 }
-.login-container h1 {
-  margin-bottom: 1.5rem;
+.chat-message {
+  margin-bottom: 0.5rem;
+  word-wrap: break-word;
 }
-.auth-form input {
-  width: 100%;
-  padding: 0.8rem;
-  margin-bottom: 1rem;
-  font-size: 1rem;
+#chatForm {
+  display: flex;
+  gap: 0.5rem;
+}
+#chatInput {
+  flex: 1;
+  padding: 0.6rem;
   border: 1px solid var(--border);
   border-radius: 6px;
 }
-.auth-form button {
-  width: 100%;
-  padding: 0.9rem;
+#chatForm button {
+  padding: 0.6rem 1rem;
   background: var(--primary);
   color: white;
   border: none;
   border-radius: 6px;
-  font-weight: bold;
-  font-size: 1rem;
   cursor: pointer;
-  transition: 0.3s;
-}
-.auth-form button:hover {
-  background: var(--primary-dark);
-}
-.switch-link {
-  font-size: 0.9rem;
-  color: var(--muted);
-  margin-top: 0.8rem;
-}
-.switch-link a {
-  color: var(--primary);
-  text-decoration: none;
-  font-weight: bold;
-}
-.hidden {
-  display: none;
 }
 
 /* DARK THEME */

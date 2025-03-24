@@ -10,6 +10,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
@@ -21,19 +22,19 @@ mongoose.connect(MONGODB_URI, {
   useUnifiedTopology: true,
 });
 
-// Esquemas
+// Schemas
 const userSchema = new mongoose.Schema({
   username: String,
   passwordHash: String
 });
-const User = mongoose.model("User", userSchema);
-
 const callSchema = new mongoose.Schema({
   username: String,
   client: String,
   start: Date,
   end: Date
 });
+
+const User = mongoose.model("User", userSchema);
 const Call = mongoose.model("Call", callSchema);
 
 // Estado
@@ -41,19 +42,18 @@ let onlineUsers = [];
 const activeCalls = [];
 const userStatusMap = {};
 
-// ROTAS AUTENTICAÇÃO
+// ROTAS API
 
-// Criar conta
+// Registo
 app.post("/api/register", async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) return res.status(400).send("Dados inválidos");
 
-  const existingUser = await User.findOne({ username });
-  if (existingUser) return res.status(409).send("Utilizador já existe");
+  const exists = await User.findOne({ username });
+  if (exists) return res.status(409).send("Utilizador já existe");
 
   const passwordHash = await bcrypt.hash(password, 10);
-  const user = new User({ username, passwordHash });
-  await user.save();
+  await User.create({ username, passwordHash });
   res.status(201).json({ success: true });
 });
 
@@ -65,13 +65,13 @@ app.post("/api/login", async (req, res) => {
   const user = await User.findOne({ username });
   if (!user) return res.status(401).send("Utilizador não encontrado");
 
-  const isValid = await bcrypt.compare(password, user.passwordHash);
-  if (!isValid) return res.status(401).send("Palavra-passe incorreta");
+  const valid = await bcrypt.compare(password, user.passwordHash);
+  if (!valid) return res.status(401).send("Palavra-passe incorreta");
 
   res.status(200).json({ success: true });
 });
 
-// Histórico
+// Apagar histórico
 app.delete("/api/delete-history", async (req, res) => {
   try {
     await Call.deleteMany({});
@@ -81,12 +81,13 @@ app.delete("/api/delete-history", async (req, res) => {
   }
 });
 
+// Carregar histórico
 app.get("/api/load-history", async (req, res) => {
   try {
     const history = await Call.find().sort({ end: -1 }).limit(100);
     res.json(history);
   } catch {
-    res.status(500).json({ error: "Erro ao recuperar histórico" });
+    res.status(500).json({ error: "Erro ao carregar histórico" });
   }
 });
 
@@ -134,6 +135,14 @@ io.on("connection", (socket) => {
   socket.on("updateStatus", ({ username, status }) => {
     userStatusMap[username] = status;
     io.emit("notify", `${username} está agora ${status}`);
+  });
+
+  // Chat em tempo real
+  socket.on("chatMessage", (data) => {
+    io.emit("chatMessage", {
+      username: data.username,
+      message: data.message,
+    });
   });
 
   socket.on("disconnect", () => {

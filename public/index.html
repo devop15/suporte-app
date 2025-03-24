@@ -8,7 +8,7 @@
 <body>
   <div class="app-layout">
 
-    <!-- Sidebar funcional -->
+    <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-logo">
         <img src="logo.png" alt="Logo" />
@@ -19,13 +19,11 @@
         <button class="menu-item" onclick="scrollToSection('section-history')">📜 Histórico</button>
         <button class="menu-item" onclick="scrollToSection('section-active')">🟢 Em Chamada</button>
         <button class="menu-item" onclick="scrollToSection('section-online')">👥 Online</button>
+        <button class="menu-item" onclick="scrollToSection('section-chat')">💬 Chat</button>
       </nav>
     </aside>
 
-    <!-- Conteúdo principal -->
     <main class="content-area">
-
-      <!-- Topbar -->
       <header class="topbar">
         <div class="topbar-left">
           <span class="app-title">Suporte App Premium</span>
@@ -33,31 +31,30 @@
         <div class="topbar-right">
           Utilizador: <strong id="username">user1</strong>
           <span id="status-indicator" class="status-tag">🟢 disponível</span>
-          <button id="toggleThemeBtn" title="Alternar tema">🌙</button>
-          <button id="logoutBtn" title="Sair">🚪 Logout</button>
+          <button id="toggleThemeBtn">🌙</button>
+          <button id="logoutBtn">🚪 Logout</button>
         </div>
       </header>
 
-      <!-- Área principal -->
       <div class="main-content">
 
-        <!-- CHAMADA -->
+        <!-- Estado da Chamada -->
         <section id="section-call">
           <h2>Estado da Chamada</h2>
-          <div class="status-display" id="statusDisplay">Nenhuma chamada ativa</div>
+          <div id="statusDisplay" class="status-display">Nenhuma chamada ativa</div>
           <div class="status-buttons">
             <input type="text" id="clientName" placeholder="Nome do cliente" />
-            <button class="status-button start" id="startBtn">Iniciar Chamada</button>
-            <button class="status-button end" id="endBtn" disabled>Terminar Chamada</button>
+            <button id="startBtn" class="status-button start">Iniciar Chamada</button>
+            <button id="endBtn" class="status-button end" disabled>Terminar Chamada</button>
             <select id="userStatus">
-              <option value="disponível" selected>🟢 Disponível</option>
+              <option value="disponível">🟢 Disponível</option>
               <option value="ocupado">🔴 Ocupado</option>
             </select>
           </div>
-          <div class="timer" id="timerDisplay"></div>
+          <div id="timerDisplay" class="timer"></div>
         </section>
 
-        <!-- HISTÓRICO -->
+        <!-- Histórico -->
         <section id="section-history">
           <h2>Histórico de Chamadas</h2>
           <div class="history-actions">
@@ -74,31 +71,37 @@
           <ul id="historyList"></ul>
         </section>
 
-        <!-- EM CHAMADA -->
+        <!-- Em Chamada -->
         <section id="section-active">
           <h2>Utilizadores em chamada (ao vivo)</h2>
           <ul id="activeCallsList"></ul>
         </section>
 
-        <!-- ONLINE -->
+        <!-- Online -->
         <section id="section-online">
           <h2>Utilizadores Online</h2>
           <ul id="onlineList"></ul>
         </section>
 
-        <!-- RODAPÉ -->
+        <!-- Chat -->
+        <section id="section-chat">
+          <h2>💬 Chat entre Utilizadores</h2>
+          <div id="chatMessages" class="chat-box"></div>
+          <form id="chatForm">
+            <input type="text" id="chatInput" placeholder="Escreve a tua mensagem..." autocomplete="off" />
+            <button type="submit">Enviar</button>
+          </form>
+        </section>
+
+        <!-- Rodapé -->
         <footer class="footer">
           Desenvolvido por <strong>devop15</strong> · &copy; 2025 Suporte App Premium
         </footer>
-
       </div>
     </main>
   </div>
 
-  <!-- NOTIFICAÇÕES -->
-  <div class="notifications" id="notifications"></div>
-
-  <!-- SCRIPTS -->
+  <div id="notifications" class="notifications"></div>
   <script src="/socket.io/socket.io.js"></script>
   <script src="script.js"></script>
   <script>

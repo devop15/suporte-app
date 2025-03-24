@@ -1,23 +1,11 @@
 {
   "name": "suporte-app-premium",
   "version": "1.0.0",
-  "description": "App de suporte com dashboard em tempo real, login seguro, chamadas, histórico e tema escuro.",
+  "description": "Aplicação de suporte em tempo real com chat, histórico de chamadas, login seguro e tema escuro.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
-  "keywords": [
-    "suporte",
-    "dashboard",
-    "realtime",
-    "socket.io",
-    "express",
-    "mongodb",
-    "auth",
-    "login",
-    "bcrypt",
-    "darkmode"
-  ],
   "author": "devop15",
   "license": "MIT",
   "dependencies": {
