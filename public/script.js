@@ -6,7 +6,7 @@ let historyData = [];
 const username = new URLSearchParams(window.location.search).get("user") || localStorage.getItem("loggedInUser") || "user1";
 document.getElementById("username").innerText = username;
 
-// ⚡ Notificações visuais
+// Notificações
 function notify(msg) {
   const box = document.getElementById("notifications");
   const el = document.createElement("div");
@@ -16,7 +16,7 @@ function notify(msg) {
   setTimeout(() => el.remove(), 4000);
 }
 
-// ⏱️ Atualização do timer
+// Timer
 function updateTimer() {
   const now = new Date();
   const elapsed = new Date(now - startTime);
@@ -25,7 +25,7 @@ function updateTimer() {
   document.getElementById("timerDisplay").innerText = `Tempo: ${min}:${sec}`;
 }
 
-// ▶️ Início da chamada
+// Iniciar chamada
 document.getElementById("startBtn").addEventListener("click", () => {
   const client = document.getElementById("clientName").value.trim() || "Sem cliente";
   startTime = new Date();
@@ -37,7 +37,7 @@ document.getElementById("startBtn").addEventListener("click", () => {
   notify(`Chamada iniciada com ${client}`);
 });
 
-// ⏹️ Fim da chamada
+// Terminar chamada
 document.getElementById("endBtn").addEventListener("click", () => {
   clearInterval(timerInterval);
   const endTime = new Date();
@@ -50,7 +50,7 @@ document.getElementById("endBtn").addEventListener("click", () => {
   notify(`Chamada terminada com ${client}`);
 });
 
-// 👥 Utilizadores online
+// Online users
 socket.on("updateOnlineUsers", (users) => {
   const list = document.getElementById("onlineList");
   list.innerHTML = "";
@@ -61,7 +61,7 @@ socket.on("updateOnlineUsers", (users) => {
   });
 });
 
-// 📜 Histórico
+// Histórico recebido
 socket.on("updateHistory", (history) => {
   historyData = history;
   renderHistory();
@@ -69,19 +69,19 @@ socket.on("updateHistory", (history) => {
   updateUserFilterOptions();
 });
 
-// 🧹 Limpar histórico da tela
+// Limpar histórico visual
 document.getElementById("clearVisualHistory").addEventListener("click", () => {
   document.getElementById("historyList").innerHTML = "";
 });
 
-// 🧾 Exportar CSV
+// Exportar CSV
 document.getElementById("exportBtn").addEventListener("click", () => {
-  let csv = "Utilizador,Cliente,Início,Fim\\n";
+  let csv = "Utilizador,Cliente,Início,Fim\n";
   historyData.forEach(item => {
-    const start = item.start ? new Date(item.start).toLocaleString() : "Sem início";
-    const end = item.end ? new Date(item.end).toLocaleString() : "Sem fim";
+    const start = item.start ? new Date(item.start).toLocaleString() : "--";
+    const end = item.end ? new Date(item.end).toLocaleString() : "--";
     const client = item.client || "Sem cliente";
-    csv += `${item.username},${client},${start},${end}\\n`;
+    csv += `${item.username},${client},${start},${end}\n`;
   });
   const blob = new Blob([csv], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
@@ -92,7 +92,7 @@ document.getElementById("exportBtn").addEventListener("click", () => {
   URL.revokeObjectURL(url);
 });
 
-// 🔎 Filtro por utilizador
+// Filtro por utilizador
 document.getElementById("filterUser").addEventListener("change", renderHistory);
 
 function renderHistory() {
@@ -103,8 +103,8 @@ function renderHistory() {
   historyData
     .filter(item => !userFilter || item.username === userFilter)
     .forEach(item => {
-      const start = item.start ? new Date(item.start).toLocaleTimeString() : "Sem início";
-      const end = item.end ? new Date(item.end).toLocaleTimeString() : "Sem fim";
+      const start = item.start ? new Date(item.start).toLocaleTimeString() : "--";
+      const end = item.end ? new Date(item.end).toLocaleTimeString() : "--";
       const client = item.client || "Sem cliente";
       const li = document.createElement("li");
       li.innerText = `${item.username} com ${client} - ${start} → ${end}`;
@@ -112,7 +112,6 @@ function renderHistory() {
     });
 }
 
-// 📋 Atualizar utilizadores no filtro
 function updateUserFilterOptions() {
   const select = document.getElementById("filterUser");
   const uniqueUsers = [...new Set(historyData.map(h => h.username))];
@@ -125,7 +124,7 @@ function updateUserFilterOptions() {
   });
 }
 
-// 🎚️ Status de utilizador
+// Estado
 document.getElementById("userStatus").addEventListener("change", (e) => {
   const status = e.target.value;
   const tag = document.getElementById("status-indicator");
@@ -133,7 +132,7 @@ document.getElementById("userStatus").addEventListener("change", (e) => {
   socket.emit("updateStatus", { username, status });
 });
 
-// 🌙 Tema escuro
+// Tema escuro
 const toggleThemeBtn = document.getElementById("toggleThemeBtn");
 toggleThemeBtn.addEventListener("click", () => {
   document.body.classList.toggle("dark-theme");
@@ -146,15 +145,18 @@ if (localStorage.getItem("theme") === "dark") {
   toggleThemeBtn.textContent = "☀️";
 }
 
-// 📊 Gráfico com Chart.js
+// Gráfico de chamadas (filtra chamadas válidas)
 let chart;
 function updateChart() {
   const ctx = document.getElementById("chartCanvas").getContext("2d");
   const dataMap = {};
-  historyData.forEach(item => {
-    const date = new Date(item.start).toLocaleDateString();
-    dataMap[date] = (dataMap[date] || 0) + 1;
-  });
+
+  historyData
+    .filter(item => item.start)
+    .forEach(item => {
+      const date = new Date(item.start).toLocaleDateString();
+      dataMap[date] = (dataMap[date] || 0) + 1;
+    });
 
   const labels = Object.keys(dataMap);
   const values = Object.values(dataMap);
@@ -177,11 +179,11 @@ function updateChart() {
   });
 }
 
-// 🚪 Logout
+// Logout
 document.getElementById("logoutBtn").addEventListener("click", () => {
   localStorage.removeItem("loggedInUser");
   window.location.href = "login.html";
 });
 
-// 🚀 Inicializar
+// Iniciar app
 socket.emit("join", username);
