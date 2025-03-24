@@ -1,7 +1,7 @@
 {
   "name": "suporte-app-premium",
   "version": "1.0.0",
-  "description": "Dashboard de suporte com chamadas em tempo real, histórico, notificações, exportação e controlo de utilizadores.",
+  "description": "App de suporte com dashboard em tempo real, login seguro, chamadas, histórico e tema escuro.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -9,18 +9,19 @@
   "keywords": [
     "suporte",
     "dashboard",
-    "chamadas",
     "realtime",
     "socket.io",
     "express",
     "mongodb",
-    "historico",
-    "voip",
-    "notificacoes"
+    "auth",
+    "login",
+    "bcrypt",
+    "darkmode"
   ],
   "author": "devop15",
   "license": "MIT",
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "mongoose": "^7.6.1",

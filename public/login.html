@@ -1,43 +1,97 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <title>Login - Suporte App</title>
+  <meta charset="UTF-8" />
+  <title>Autenticação - Suporte App</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="login-container">
     <img src="logo.png" alt="Logo" class="logo login-logo" />
-    <h1>Bem-vindo ao Suporte App</h1>
+    <h1 id="formTitle">Entrar no Suporte App</h1>
 
-    <form id="loginForm">
-      <label for="usernameSelect">Escolhe o teu utilizador:</label>
-      <select name="username" id="usernameSelect" required>
-        <option value="" disabled selected>Selecionar utilizador</option>
-        <option value="user1">user1</option>
-        <option value="user2">user2</option>
-        <option value="user3">user3</option>
-      </select>
+    <!-- Formulário de Login -->
+    <form id="loginForm" class="auth-form">
+      <input type="text" id="loginUsername" placeholder="Utilizador" required />
+      <input type="password" id="loginPassword" placeholder="Palavra-passe" required />
       <button type="submit">Entrar</button>
+      <p class="switch-link">Ainda não tens conta? <a href="#" id="showRegister">Criar conta</a></p>
+    </form>
+
+    <!-- Formulário de Registo -->
+    <form id="registerForm" class="auth-form hidden">
+      <input type="text" id="registerUsername" placeholder="Novo utilizador" required />
+      <input type="password" id="registerPassword" placeholder="Nova palavra-passe" required />
+      <button type="submit">Criar Conta</button>
+      <p class="switch-link">Já tens conta? <a href="#" id="showLogin">Entrar</a></p>
     </form>
   </div>
 
   <script>
-    const form = document.getElementById("loginForm");
-    const select = document.getElementById("usernameSelect");
+    const loginForm = document.getElementById("loginForm");
+    const registerForm = document.getElementById("registerForm");
+    const formTitle = document.getElementById("formTitle");
 
-    form.addEventListener("submit", (e) => {
+    // Alternar entre login e registo
+    document.getElementById("showRegister").onclick = (e) => {
       e.preventDefault();
-      const user = select.value;
-      if (user) {
-        localStorage.setItem("loggedInUser", user);
-        window.location.href = `/index.html?user=${user}`;
-      }
-    });
+      loginForm.classList.add("hidden");
+      registerForm.classList.remove("hidden");
+      formTitle.textContent = "Criar nova conta";
+    };
 
-    // Tema escuro automático
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark") {
+    document.getElementById("showLogin").onclick = (e) => {
+      e.preventDefault();
+      registerForm.classList.add("hidden");
+      loginForm.classList.remove("hidden");
+      formTitle.textContent = "Entrar no Suporte App";
+    };
+
+    // Login
+    loginForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const username = loginForm.loginUsername.value.trim();
+      const password = loginForm.loginPassword.value;
+
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
+
+      if (res.ok) {
+        localStorage.setItem("loggedInUser", username);
+        window.location.href = `index.html?user=${username}`;
+      } else {
+        alert("Credenciais inválidas");
+      }
+    };
+
+    // Criar Conta
+    registerForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const username = registerForm.registerUsername.value.trim();
+      const password = registerForm.registerPassword.value;
+
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
+
+      if (res.ok) {
+        alert("Conta criada com sucesso! Podes entrar agora.");
+        registerForm.classList.add("hidden");
+        loginForm.classList.remove("hidden");
+        formTitle.textContent = "Entrar no Suporte App";
+      } else {
+        const msg = await res.text();
+        alert("Erro ao criar conta: " + msg);
+      }
+    };
+
+    // Dark mode automático
+    if (localStorage.getItem("theme") === "dark") {
       document.body.classList.add("dark-theme");
     }
   </script>

@@ -3,6 +3,7 @@ const http = require("http");
 const path = require("path");
 const socketIo = require("socket.io");
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 const cors = require("cors");
 
 const app = express();
@@ -20,46 +21,71 @@ mongoose.connect(MONGODB_URI, {
   useUnifiedTopology: true,
 });
 
-// Schema
+// Esquemas
+const userSchema = new mongoose.Schema({
+  username: String,
+  passwordHash: String
+});
+const User = mongoose.model("User", userSchema);
+
 const callSchema = new mongoose.Schema({
   username: String,
   client: String,
   start: Date,
-  end: Date,
+  end: Date
 });
 const Call = mongoose.model("Call", callSchema);
 
-// Estado da aplicação
+// Estado
 let onlineUsers = [];
-const userStatusMap = {};
 const activeCalls = [];
+const userStatusMap = {};
 
-// Rota: login
-app.post("/login", (req, res) => {
-  const { username } = req.body;
-  if (username) {
-    res.status(200).json({ success: true });
-  } else {
-    res.status(400).json({ error: "Utilizador inválido" });
-  }
+// ROTAS AUTENTICAÇÃO
+
+// Criar conta
+app.post("/api/register", async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) return res.status(400).send("Dados inválidos");
+
+  const existingUser = await User.findOne({ username });
+  if (existingUser) return res.status(409).send("Utilizador já existe");
+
+  const passwordHash = await bcrypt.hash(password, 10);
+  const user = new User({ username, passwordHash });
+  await user.save();
+  res.status(201).json({ success: true });
 });
 
-// Rota: apagar histórico
+// Login
+app.post("/api/login", async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) return res.status(400).send("Dados inválidos");
+
+  const user = await User.findOne({ username });
+  if (!user) return res.status(401).send("Utilizador não encontrado");
+
+  const isValid = await bcrypt.compare(password, user.passwordHash);
+  if (!isValid) return res.status(401).send("Palavra-passe incorreta");
+
+  res.status(200).json({ success: true });
+});
+
+// Histórico
 app.delete("/api/delete-history", async (req, res) => {
   try {
     await Call.deleteMany({});
     res.status(200).json({ success: true });
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: "Erro ao apagar histórico" });
   }
 });
 
-// Rota: recuperar histórico
 app.get("/api/load-history", async (req, res) => {
   try {
     const history = await Call.find().sort({ end: -1 }).limit(100);
     res.json(history);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: "Erro ao recuperar histórico" });
   }
 });
@@ -96,12 +122,8 @@ io.on("connection", (socket) => {
     };
 
     await Call.create(callData);
-
-    // Remover da lista de chamadas ativas
     const index = activeCalls.findIndex(call => call.username === data.username);
-    if (index !== -1) {
-      activeCalls.splice(index, 1);
-    }
+    if (index !== -1) activeCalls.splice(index, 1);
 
     const history = await Call.find().sort({ end: -1 }).limit(100);
     io.emit("updateHistory", history);
@@ -118,13 +140,8 @@ io.on("connection", (socket) => {
     if (currentUser) {
       onlineUsers = onlineUsers.filter(u => u !== currentUser);
       delete userStatusMap[currentUser];
-
-      // Se o utilizador estava em chamada, remover também
       const index = activeCalls.findIndex(call => call.username === currentUser);
-      if (index !== -1) {
-        activeCalls.splice(index, 1);
-      }
-
+      if (index !== -1) activeCalls.splice(index, 1);
       io.emit("updateOnlineUsers", onlineUsers);
       io.emit("updateActiveCalls", activeCalls);
       io.emit("notify", `${currentUser} saiu da aplicação`);
@@ -132,7 +149,7 @@ io.on("connection", (socket) => {
   });
 });
 
-// Start do servidor
+// Iniciar servidor
 const PORT = process.env.PORT || 10000;
 server.listen(PORT, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);

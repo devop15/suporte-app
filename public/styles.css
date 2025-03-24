@@ -19,13 +19,12 @@ body {
   color: var(--text);
 }
 
-/* App Layout Slack-like */
+/* APP LAYOUT ESTILO SLACK */
 .app-layout {
   display: flex;
   height: 100vh;
   overflow: hidden;
 }
-
 .sidebar {
   width: 240px;
   background: var(--primary);
@@ -34,7 +33,6 @@ body {
   flex-direction: column;
   padding: 1rem;
 }
-
 .sidebar-logo {
   display: flex;
   align-items: center;
@@ -47,7 +45,6 @@ body {
   font-size: 1.3rem;
   margin: 0;
 }
-
 .sidebar-menu {
   margin-top: 2rem;
   display: flex;
@@ -69,7 +66,6 @@ body {
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* Topbar */
 .topbar {
   display: flex;
   justify-content: space-between;
@@ -109,7 +105,6 @@ body {
   opacity: 0.7;
 }
 
-/* Conteúdo principal */
 .content-area {
   flex: 1;
   display: flex;
@@ -128,7 +123,6 @@ h2 {
   color: var(--text);
 }
 
-/* Estado da chamada */
 .status-display {
   padding: 1rem;
   background: #e0f2fe;
@@ -166,8 +160,6 @@ h2 {
 .status-button.end:hover {
   background: #dc2626;
 }
-
-/* Campo cliente */
 .status-buttons input[type="text"] {
   padding: 0.6rem 0.9rem;
   font-size: 1rem;
@@ -186,7 +178,6 @@ select {
   color: var(--text);
 }
 
-/* Histórico e listas */
 .history-actions {
   display: flex;
   align-items: center;
@@ -205,7 +196,6 @@ select {
   box-shadow: 0 1px 3px var(--shadow);
 }
 
-/* Notificações */
 .notifications {
   position: fixed;
   bottom: 1rem;
@@ -224,7 +214,6 @@ select {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-/* Rodapé */
 .footer {
   text-align: center;
   padding: 1rem;
@@ -240,20 +229,70 @@ body.dark-theme .footer {
   border-top: 1px solid #374151;
 }
 
-/* Dark Mode */
+/* LOGIN & REGISTO */
+.login-container {
+  max-width: 400px;
+  margin: 80px auto;
+  background: var(--card-bg);
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+.login-logo {
+  height: 64px;
+  margin-bottom: 1rem;
+}
+.login-container h1 {
+  margin-bottom: 1.5rem;
+}
+.auth-form input {
+  width: 100%;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.auth-form button {
+  width: 100%;
+  padding: 0.9rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.auth-form button:hover {
+  background: var(--primary-dark);
+}
+.switch-link {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-top: 0.8rem;
+}
+.switch-link a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: bold;
+}
+.hidden {
+  display: none;
+}
+
+/* DARK THEME */
 body.dark-theme {
   background: #111827;
   color: #f3f4f6;
 }
-body.dark-theme .sidebar {
+body.dark-theme .sidebar,
+body.dark-theme .topbar,
+body.dark-theme .login-container {
   background: #1f2937;
-}
-body.dark-theme .topbar {
-  background: #1f2937;
-  border-bottom: 1px solid #374151;
-}
-body.dark-theme .content-area {
-  background: #111827;
+  color: #f3f4f6;
 }
 body.dark-theme input,
 body.dark-theme select {
@@ -264,12 +303,6 @@ body.dark-theme select {
 body.dark-theme .status-display {
   background: #374151;
   border-left-color: #60a5fa;
-}
-body.dark-theme .status-button.start {
-  background: #059669;
-}
-body.dark-theme .status-button.end {
-  background: #dc2626;
 }
 body.dark-theme .menu-item:hover {
   background: rgba(255, 255, 255, 0.1);
