@@ -9,15 +9,13 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-require('dotenv').config();
-
-// MongoDB connection
+// Conectar ao MongoDB (Render usa variável de ambiente direto)
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/suporte', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
 
-// Mongoose Schema
+// Definir esquema do histórico de chamadas
 const CallSchema = new mongoose.Schema({
   name: String,
   tag: String,
@@ -34,7 +32,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// REST API
+// API para histórico
 app.get('/api/history', async (req, res) => {
   const history = await Call.find().sort({ date: -1 });
   res.json(history);
@@ -47,7 +45,7 @@ app.post('/api/history', async (req, res) => {
   res.status(201).json({ success: true });
 });
 
-// Online users tracking
+// WebSocket: lista de utilizadores online + chamadas em tempo real
 const onlineUsers = new Set();
 
 io.on('connection', (socket) => {
@@ -61,10 +59,6 @@ io.on('connection', (socket) => {
     io.emit('updateOnlineUsers', Array.from(onlineUsers));
   });
 
-  socket.on('disconnect', () => {
-    // Desconexão anônima — opcionalmente podemos limpar algo
-  });
-
   socket.on('startCall', (data) => {
     io.emit('startCall', data);
   });
@@ -74,6 +68,7 @@ io.on('connection', (socket) => {
   });
 });
 
+// Iniciar servidor
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
