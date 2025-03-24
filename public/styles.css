@@ -53,7 +53,6 @@ body {
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* Botões no topo */
 #toggleThemeBtn,
 #logoutBtn {
   background: none;
@@ -144,7 +143,7 @@ select {
   color: var(--text);
 }
 
-/* Histórico */
+/* Histórico e listas */
 .history-actions {
   display: flex;
   align-items: center;
@@ -154,22 +153,14 @@ select {
 }
 
 #historyList li,
-#onlineList li {
+#onlineList li,
+#activeCallsList li {
   background: var(--card-bg);
   padding: 0.75rem 1rem;
   border-left: 5px solid var(--primary);
   margin-bottom: 0.5rem;
   border-radius: 6px;
   box-shadow: 0 1px 3px var(--shadow);
-}
-
-/* Gráfico */
-canvas#chartCanvas {
-  background: var(--card-bg);
-  border-radius: 8px;
-  padding: 1rem;
-  box-shadow: 0 2px 5px var(--shadow);
-  width: 100%;
 }
 
 /* Login */
@@ -219,7 +210,7 @@ canvas#chartCanvas {
   background: var(--primary-dark);
 }
 
-/* Notificações - canto inferior direito */
+/* Notificações */
 .notifications {
   position: fixed;
   bottom: 1rem;
@@ -237,6 +228,22 @@ canvas#chartCanvas {
   border-radius: 6px;
   margin-top: 0.5rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Rodapé */
+.footer {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  background: var(--card-bg);
+  border-top: 1px solid var(--border);
+  margin-top: 2rem;
+}
+body.dark-theme .footer {
+  background: #1f2937;
+  color: #9ca3af;
+  border-top: 1px solid #374151;
 }
 
 /* Dark Mode */
@@ -269,9 +276,4 @@ body.dark-theme .status-button.start {
 
 body.dark-theme .status-button.end {
   background: #dc2626;
-}
-
-body.dark-theme canvas#chartCanvas {
-  background: #1f2937;
-  box-shadow: none;
 }
