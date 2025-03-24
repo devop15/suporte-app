@@ -1,7 +1,7 @@
 {
-  "name": "suporte-app",
-  "version": "1.0.0",
-  "description": "App de suporte com sincronização",
+  "name": "suporte-app-pro",
+  "version": "2.0.0",
+  "description": "App de suporte com estatísticas, exportação, e sincronização em tempo real",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -9,6 +9,7 @@
   "dependencies": {
     "express": "^4.18.2",
     "mongoose": "^7.6.1",
-    "socket.io": "^4.7.2"
+    "socket.io": "^4.7.2",
+    "json2csv": "^6.0.0"
   }
 }
