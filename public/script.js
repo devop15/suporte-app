@@ -12,7 +12,6 @@ function checkAuth() {
     }
 }
 
-// Login
 document.getElementById("loginForm")?.addEventListener("submit", (e) => {
     e.preventDefault();
     const username = document.getElementById("username").value;
@@ -26,43 +25,33 @@ document.getElementById("loginForm")?.addEventListener("submit", (e) => {
     }
 });
 
-// Alternar tema
 document.getElementById("themeToggle")?.addEventListener("click", () => {
     document.body.classList.toggle("dark-theme");
     const isDark = document.body.classList.contains("dark-theme");
     localStorage.setItem("theme", isDark ? "dark" : "light");
 });
 
-// Aplicar tema salvo
 const savedTheme = localStorage.getItem("theme");
 if (savedTheme === "dark") {
     document.body.classList.add("dark-theme");
 }
 
-// Função de Logout
 function logout() {
     localStorage.removeItem("loggedInUser");
     window.location.href = "login.html";
 }
-
-// Associar a função de logout ao botão
 document.getElementById("logoutButton")?.addEventListener("click", logout);
 
-// Exibir notificações
+// WebSocket
 const socket = io();
 socket.on('notification', (data) => {
     const notification = document.createElement('div');
     notification.className = 'notification';
     notification.innerText = data.message;
     document.getElementById('notifications').appendChild(notification);
-
-    // Remover a notificação após 5 segundos
-    setTimeout(() => {
-        notification.remove();
-    }, 5000);
+    setTimeout(() => notification.remove(), 5000);
 });
 
-// Lógica das chamadas
 let callStartTime = null;
 let collaboratorName = '';
 
@@ -78,7 +67,10 @@ function startCall() {
     document.getElementById('endButton').disabled = false;
     document.getElementById('statusDisplay').innerText = `Estado atual: Em Chamada (Iniciada às ${callStartTime.toLocaleTimeString()})`;
     document.getElementById('statusDisplay').classList.add('active');
-    socket.emit('startCall', { collaboratorName });
+    socket.emit("startCall", {
+        name: collaboratorName,
+        startTime: callStartTime.toLocaleTimeString()
+    });
 }
 
 function endCall() {
@@ -100,15 +92,59 @@ function endCall() {
     `;
     historyList.appendChild(historyItem);
 
-    // Resetar estado
+    fetch('/api/history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            name: collaboratorName,
+            start: callStartTime.toLocaleTimeString(),
+            end: callEndTime.toLocaleTimeString(),
+            duration: duration
+        })
+    });
+
     callStartTime = null;
     document.getElementById('startButton').disabled = false;
     document.getElementById('endButton').disabled = true;
     document.getElementById('statusDisplay').innerText = 'Estado atual: Nenhum';
     document.getElementById('statusDisplay').classList.remove('active');
     document.getElementById('collaboratorName').value = '';
-    socket.emit('endCall');
+    socket.emit("endCall");
 }
 
-// Verificar autenticação ao carregar a página
+async function loadCallHistory() {
+    const historyList = document.getElementById('historyList');
+    try {
+        const res = await fetch('/api/history');
+        const storedHistory = await res.json();
+        storedHistory.forEach(entry => {
+            const historyItem = document.createElement('li');
+            historyItem.innerHTML = `
+                <div class="details">
+                    <strong>${entry.name}</strong>
+                    <span>Iniciada às ${entry.start}</span>
+                    <span>Finalizada às ${entry.end}</span>
+                </div>
+                <span>Duração: ${entry.duration} segundos</span>
+            `;
+            historyList.appendChild(historyItem);
+        });
+    } catch (err) {
+        console.error('Erro ao carregar histórico:', err);
+    }
+}
+
+socket.on("userInCall", (data) => {
+    const statusDisplay = document.getElementById("statusDisplay");
+    statusDisplay.innerText = `⚡ ${data.name} iniciou uma chamada às ${data.startTime}`;
+    statusDisplay.classList.add("active");
+});
+
+socket.on("userEndedCall", () => {
+    const statusDisplay = document.getElementById("statusDisplay");
+    statusDisplay.innerText = "Estado atual: Nenhum";
+    statusDisplay.classList.remove("active");
+});
+
 checkAuth();
+loadCallHistory();

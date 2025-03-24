@@ -1,7 +1,7 @@
 {
   "name": "suporte-app",
   "version": "1.0.0",
-  "description": "App de acompanhamento de chamadas com histórico centralizado",
+  "description": "App de suporte com sincronização",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
