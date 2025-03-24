@@ -8,7 +8,7 @@
 <body>
   <div class="app-layout">
 
-    <!-- Sidebar estilo Slack -->
+    <!-- Sidebar funcional -->
     <aside class="sidebar">
       <div class="sidebar-logo">
         <img src="logo.png" alt="Logo" />
@@ -17,7 +17,7 @@
       <nav class="sidebar-menu">
         <button class="menu-item" onclick="scrollToSection('section-call')">📞 Chamada</button>
         <button class="menu-item" onclick="scrollToSection('section-history')">📜 Histórico</button>
-        <button class="menu-item" onclick="scrollToSection('section-active')">🟢 Em chamada</button>
+        <button class="menu-item" onclick="scrollToSection('section-active')">🟢 Em Chamada</button>
         <button class="menu-item" onclick="scrollToSection('section-online')">👥 Online</button>
       </nav>
     </aside>
@@ -38,9 +38,10 @@
         </div>
       </header>
 
+      <!-- Área principal -->
       <div class="main-content">
 
-        <!-- Chamada atual -->
+        <!-- CHAMADA -->
         <section id="section-call">
           <h2>Estado da Chamada</h2>
           <div class="status-display" id="statusDisplay">Nenhuma chamada ativa</div>
@@ -56,7 +57,7 @@
           <div class="timer" id="timerDisplay"></div>
         </section>
 
-        <!-- Histórico -->
+        <!-- HISTÓRICO -->
         <section id="section-history">
           <h2>Histórico de Chamadas</h2>
           <div class="history-actions">
@@ -73,19 +74,19 @@
           <ul id="historyList"></ul>
         </section>
 
-        <!-- Em chamada -->
+        <!-- EM CHAMADA -->
         <section id="section-active">
           <h2>Utilizadores em chamada (ao vivo)</h2>
           <ul id="activeCallsList"></ul>
         </section>
 
-        <!-- Online -->
+        <!-- ONLINE -->
         <section id="section-online">
           <h2>Utilizadores Online</h2>
           <ul id="onlineList"></ul>
         </section>
 
-        <!-- Rodapé -->
+        <!-- RODAPÉ -->
         <footer class="footer">
           Desenvolvido por <strong>devop15</strong> · &copy; 2025 Suporte App Premium
         </footer>
@@ -94,10 +95,10 @@
     </main>
   </div>
 
-  <!-- Notificações -->
+  <!-- NOTIFICAÇÕES -->
   <div class="notifications" id="notifications"></div>
 
-  <!-- Scripts -->
+  <!-- SCRIPTS -->
   <script src="/socket.io/socket.io.js"></script>
   <script src="script.js"></script>
   <script>
