@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Suporte App - Dashboard</title>
   <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header class="top-bar">
@@ -11,32 +12,61 @@
       <img src="logo.png" alt="Logo" class="logo" />
       <span>Suporte App</span>
     </div>
-    <div class="top-user">Utilizador: <em id="username">user1</em></div>
+    <div class="top-user">
+      Utilizador: <em id="username">user1</em>
+      <span id="status-indicator" class="status-tag">🟢 disponível</span>
+      <button id="toggleThemeBtn" title="Alternar tema">🌙</button>
+    </div>
   </header>
 
   <div class="container">
+
+    <!-- Controlo de chamada -->
     <section>
       <h2>Estado da Chamada</h2>
       <div class="status-display" id="statusDisplay">Nenhuma chamada ativa</div>
       <div class="status-buttons">
         <button class="status-button start" id="startBtn">Iniciar Chamada</button>
         <button class="status-button end" id="endBtn" disabled>Terminar Chamada</button>
+        <select id="userStatus" title="Estado atual">
+          <option value="disponível" selected>🟢 Disponível</option>
+          <option value="ocupado">🔴 Ocupado</option>
+        </select>
       </div>
       <div class="timer" id="timerDisplay"></div>
     </section>
 
+    <!-- Histórico com filtro e exportação -->
     <section>
-      <h2>Histórico</h2>
+      <h2>Histórico de Chamadas</h2>
+      <div class="history-actions">
+        <label for="filterUser">Filtrar por utilizador:</label>
+        <select id="filterUser">
+          <option value="">Todos</option>
+        </select>
+        <button id="exportBtn">📤 Exportar CSV</button>
+      </div>
       <ul id="historyList"></ul>
     </section>
 
+    <!-- Utilizadores Online -->
     <section>
       <h2>Utilizadores Online</h2>
       <ul id="onlineList"></ul>
     </section>
+
+    <!-- Estatísticas (gráfico) -->
+    <section>
+      <h2>Estatísticas</h2>
+      <canvas id="chartCanvas" height="100"></canvas>
+    </section>
+
   </div>
 
+  <!-- Notificações flutuantes -->
   <div class="notifications" id="notifications"></div>
+
+  <!-- Scripts -->
   <script src="/socket.io/socket.io.js"></script>
   <script src="script.js"></script>
 </body>

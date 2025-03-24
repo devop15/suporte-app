@@ -21,7 +21,7 @@ mongoose.connect(MONGODB_URI, {
   useUnifiedTopology: true,
 });
 
-// Modelos
+// Esquema do histórico de chamadas
 const callSchema = new mongoose.Schema({
   username: String,
   start: Date,
@@ -29,10 +29,11 @@ const callSchema = new mongoose.Schema({
 });
 const Call = mongoose.model("Call", callSchema);
 
-// Utilizadores online
+// Estado dos utilizadores online
 let onlineUsers = [];
+const userStatusMap = {}; // { user1: "disponível", user2: "ocupado" }
 
-// Rotas básicas (opcional para autenticação futura)
+// Endpoint básico de login (opcional)
 app.post("/login", (req, res) => {
   const { username } = req.body;
   if (username) {
@@ -52,27 +53,38 @@ io.on("connection", (socket) => {
       onlineUsers.push(username);
     }
     io.emit("updateOnlineUsers", onlineUsers);
+    userStatusMap[username] = "disponível";
+    io.emit("notify", `${username} entrou na aplicação`);
   });
 
   socket.on("startCall", (data) => {
-    socket.callStartTime = new Date();
+    socket.callStartTime = data.start || new Date();
+    io.emit("notify", `📞 ${data.username} iniciou uma chamada`);
   });
 
   socket.on("endCall", async (data) => {
     const callData = {
       username: data.username,
-      start: socket.callStartTime,
-      end: data.end,
+      start: socket.callStartTime || new Date(),
+      end: data.end || new Date(),
     };
     await Call.create(callData);
-    const history = await Call.find().sort({ end: -1 }).limit(10);
+    const history = await Call.find().sort({ end: -1 }).limit(100);
     io.emit("updateHistory", history);
+    io.emit("notify", `✅ ${data.username} terminou a chamada`);
+  });
+
+  socket.on("updateStatus", ({ username, status }) => {
+    userStatusMap[username] = status;
+    io.emit("notify", `${username} está agora ${status}`);
   });
 
   socket.on("disconnect", () => {
     if (currentUser) {
       onlineUsers = onlineUsers.filter(u => u !== currentUser);
+      delete userStatusMap[currentUser];
       io.emit("updateOnlineUsers", onlineUsers);
+      io.emit("notify", `${currentUser} saiu da aplicação`);
     }
   });
 });

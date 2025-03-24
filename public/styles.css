@@ -19,7 +19,7 @@ body {
   color: var(--text);
 }
 
-/* Header top */
+/* Topo */
 .top-bar {
   display: flex;
   justify-content: space-between;
@@ -40,7 +40,28 @@ body {
   width: auto;
 }
 
-/* Conteúdo */
+.top-user {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 0.95rem;
+}
+
+.status-tag {
+  padding: 4px 10px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+#toggleThemeBtn {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: white;
+}
+
+/* Conteúdo principal */
 .container {
   max-width: 960px;
   margin: auto;
@@ -48,11 +69,12 @@ body {
 }
 
 h2 {
-  margin-top: 2rem;
+  margin-top: 2.5rem;
   margin-bottom: 1rem;
   color: var(--text);
 }
 
+/* Estado da Chamada */
 .status-display {
   padding: 1rem;
   background: #e0f2fe;
@@ -65,6 +87,8 @@ h2 {
 .status-buttons {
   display: flex;
   gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .status-button {
@@ -95,9 +119,22 @@ h2 {
   background: #dc2626;
 }
 
-ul {
-  list-style: none;
-  padding-left: 0;
+select {
+  padding: 0.6rem 0.8rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: white;
+  color: var(--text);
+}
+
+/* Histórico e filtros */
+.history-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
 }
 
 #historyList li,
@@ -108,6 +145,14 @@ ul {
   margin-bottom: 0.5rem;
   border-radius: 6px;
   box-shadow: 0 1px 3px var(--shadow);
+}
+
+/* Gráfico */
+canvas#chartCanvas {
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 5px var(--shadow);
 }
 
 /* Login */
@@ -163,7 +208,7 @@ ul {
   position: fixed;
   top: 1rem;
   right: 1rem;
-  z-index: 100;
+  z-index: 999;
 }
 
 .notification {
@@ -205,4 +250,9 @@ body.dark-theme .status-button.start {
 
 body.dark-theme .status-button.end {
   background: #dc2626;
+}
+
+body.dark-theme canvas#chartCanvas {
+  background: #1f2937;
+  box-shadow: none;
 }

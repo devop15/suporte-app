@@ -1,12 +1,20 @@
 {
   "name": "suporte-app-premium",
   "version": "1.0.0",
-  "description": "Dashboard de suporte com chamadas, histórico e utilizadores online",
+  "description": "Dashboard de suporte com chamadas, notificações, histórico, estado e estatísticas",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
-  "keywords": [],
+  "keywords": [
+    "suporte",
+    "dashboard",
+    "chamadas",
+    "socket.io",
+    "express",
+    "node",
+    "mongodb"
+  ],
   "author": "devop15",
   "license": "MIT",
   "dependencies": {
