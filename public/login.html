@@ -1,42 +1,41 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Login - Suporte App</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="login-container">
     <img src="logo.png" alt="Logo" class="logo login-logo" />
-    <h1>Login Suporte</h1>
+    <h1>Bem-vindo ao Suporte App</h1>
 
     <form id="loginForm">
-      <input type="text" id="username" name="username" placeholder="Utilizador" required />
-      <input type="password" id="password" name="password" placeholder="Palavra-passe" required />
+      <label for="usernameSelect">Escolhe o teu utilizador:</label>
+      <select name="username" id="usernameSelect" required>
+        <option value="" disabled selected>Selecionar utilizador</option>
+        <option value="user1">user1</option>
+        <option value="user2">user2</option>
+        <option value="user3">user3</option>
+      </select>
       <button type="submit">Entrar</button>
     </form>
   </div>
 
   <script>
-    const users = [
-      { username: "Pedro Robalo", password: "pass1" },
-      { username: "user2", password: "pass2" }
-    ];
+    const form = document.getElementById("loginForm");
+    const select = document.getElementById("usernameSelect");
 
-    document.getElementById("loginForm").addEventListener("submit", (e) => {
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const valid = users.find(u => u.username === username && u.password === password);
-      if (valid) {
-        localStorage.setItem("loggedInUser", username);
-        window.location.href = `index.html?user=${username}`;
-      } else {
-        alert("Credenciais inválidas");
+      const user = select.value;
+      if (user) {
+        localStorage.setItem("loggedInUser", user);
+        window.location.href = `/index.html?user=${user}`;
       }
     });
 
-    // Dark mode (opcional)
+    // Tema escuro automático
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme === "dark") {
       document.body.classList.add("dark-theme");

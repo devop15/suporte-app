@@ -6,78 +6,105 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="top-bar">
-    <div class="logo-area">
-      <img src="logo.png" alt="Logo" class="logo" />
-      <span>Suporte App</span>
-    </div>
-    <div class="top-user">
-      Utilizador: <em id="username">user1</em>
-      <span id="status-indicator" class="status-tag">🟢 disponível</span>
-      <button id="toggleThemeBtn" title="Alternar tema">🌙</button>
-      <button id="logoutBtn" title="Sair">🚪 Logout</button>
-    </div>
-  </header>
+  <div class="app-layout">
 
-  <div class="container">
-
-    <!-- Estado da Chamada -->
-    <section>
-      <h2>Estado da Chamada</h2>
-      <div class="status-display" id="statusDisplay">Nenhuma chamada ativa</div>
-      <div class="status-buttons">
-        <input type="text" id="clientName" placeholder="Nome do cliente" />
-        <button class="status-button start" id="startBtn">Iniciar Chamada</button>
-        <button class="status-button end" id="endBtn" disabled>Terminar Chamada</button>
-        <select id="userStatus" title="Estado atual">
-          <option value="disponível" selected>🟢 Disponível</option>
-          <option value="ocupado">🔴 Ocupado</option>
-        </select>
+    <!-- Sidebar estilo Slack -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <img src="logo.png" alt="Logo" />
+        <h1>Suporte</h1>
       </div>
-      <div class="timer" id="timerDisplay"></div>
-    </section>
+      <nav class="sidebar-menu">
+        <button class="menu-item" onclick="scrollToSection('section-call')">📞 Chamada</button>
+        <button class="menu-item" onclick="scrollToSection('section-history')">📜 Histórico</button>
+        <button class="menu-item" onclick="scrollToSection('section-active')">🟢 Em chamada</button>
+        <button class="menu-item" onclick="scrollToSection('section-online')">👥 Online</button>
+      </nav>
+    </aside>
 
-    <!-- Histórico -->
-    <section>
-      <h2>Histórico de Chamadas</h2>
-      <div class="history-actions">
-        <label for="filterUser">Filtrar por utilizador:</label>
-        <select id="filterUser">
-          <option value="">Todos</option>
-        </select>
-        <button id="applyFilterBtn">🔍 Aplicar filtro</button>
-        <button id="exportBtn">📤 Exportar CSV</button>
-        <button id="clearVisualHistory">🧹 Limpar da tela</button>
-        <button id="deleteHistory">🗑️ Apagar histórico</button>
-        <button id="recoverHistory">📂 Recuperar histórico</button>
+    <!-- Conteúdo principal -->
+    <main class="content-area">
+
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <span class="app-title">Suporte App Premium</span>
+        </div>
+        <div class="topbar-right">
+          Utilizador: <strong id="username">user1</strong>
+          <span id="status-indicator" class="status-tag">🟢 disponível</span>
+          <button id="toggleThemeBtn" title="Alternar tema">🌙</button>
+          <button id="logoutBtn" title="Sair">🚪 Logout</button>
+        </div>
+      </header>
+
+      <div class="main-content">
+
+        <!-- Chamada atual -->
+        <section id="section-call">
+          <h2>Estado da Chamada</h2>
+          <div class="status-display" id="statusDisplay">Nenhuma chamada ativa</div>
+          <div class="status-buttons">
+            <input type="text" id="clientName" placeholder="Nome do cliente" />
+            <button class="status-button start" id="startBtn">Iniciar Chamada</button>
+            <button class="status-button end" id="endBtn" disabled>Terminar Chamada</button>
+            <select id="userStatus">
+              <option value="disponível" selected>🟢 Disponível</option>
+              <option value="ocupado">🔴 Ocupado</option>
+            </select>
+          </div>
+          <div class="timer" id="timerDisplay"></div>
+        </section>
+
+        <!-- Histórico -->
+        <section id="section-history">
+          <h2>Histórico de Chamadas</h2>
+          <div class="history-actions">
+            <label for="filterUser">Filtrar por utilizador:</label>
+            <select id="filterUser">
+              <option value="">Todos</option>
+            </select>
+            <button id="applyFilterBtn">🔍 Aplicar filtro</button>
+            <button id="exportBtn">📤 Exportar CSV</button>
+            <button id="clearVisualHistory">🧹 Limpar da tela</button>
+            <button id="deleteHistory">🗑️ Apagar histórico</button>
+            <button id="recoverHistory">📂 Recuperar histórico</button>
+          </div>
+          <ul id="historyList"></ul>
+        </section>
+
+        <!-- Em chamada -->
+        <section id="section-active">
+          <h2>Utilizadores em chamada (ao vivo)</h2>
+          <ul id="activeCallsList"></ul>
+        </section>
+
+        <!-- Online -->
+        <section id="section-online">
+          <h2>Utilizadores Online</h2>
+          <ul id="onlineList"></ul>
+        </section>
+
+        <!-- Rodapé -->
+        <footer class="footer">
+          Desenvolvido por <strong>devop15</strong> · &copy; 2025 Suporte App Premium
+        </footer>
+
       </div>
-      <ul id="historyList"></ul>
-    </section>
-
-    <!-- Utilizadores em chamada -->
-    <section>
-      <h2>Utilizadores em chamada (ao vivo)</h2>
-      <ul id="activeCallsList"></ul>
-    </section>
-
-    <!-- Utilizadores Online -->
-    <section>
-      <h2>Utilizadores Online</h2>
-      <ul id="onlineList"></ul>
-    </section>
-
+    </main>
   </div>
 
   <!-- Notificações -->
   <div class="notifications" id="notifications"></div>
 
-  <!-- Rodapé -->
-  <footer class="footer">
-    Desenvolvido por <strong>devop15</strong> · &copy; 2025 Suporte App Premium. Todos os direitos reservados.
-  </footer>
-
   <!-- Scripts -->
   <script src="/socket.io/socket.io.js"></script>
   <script src="script.js"></script>
+  <script>
+    function scrollToSection(id) {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }
+  </script>
 </body>
 </html>
