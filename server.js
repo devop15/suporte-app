@@ -20,7 +20,7 @@ mongoose.connect(MONGODB_URI, {
   useUnifiedTopology: true,
 });
 
-// Schema atualizado
+// Schema
 const callSchema = new mongoose.Schema({
   username: String,
   client: String,
@@ -29,11 +29,12 @@ const callSchema = new mongoose.Schema({
 });
 const Call = mongoose.model("Call", callSchema);
 
-// Estado dos utilizadores online
+// Estado da aplicação
 let onlineUsers = [];
 const userStatusMap = {};
+const activeCalls = [];
 
-// Rota: login básico
+// Rota: login
 app.post("/login", (req, res) => {
   const { username } = req.body;
   if (username) {
@@ -53,7 +54,7 @@ app.delete("/api/delete-history", async (req, res) => {
   }
 });
 
-// Rota: recuperar histórico completo
+// Rota: recuperar histórico
 app.get("/api/load-history", async (req, res) => {
   try {
     const history = await Call.find().sort({ end: -1 }).limit(100);
@@ -74,12 +75,15 @@ io.on("connection", (socket) => {
     }
     userStatusMap[username] = "disponível";
     io.emit("updateOnlineUsers", onlineUsers);
+    io.emit("updateActiveCalls", activeCalls);
     io.emit("notify", `${username} entrou na aplicação`);
   });
 
   socket.on("startCall", (data) => {
     socket.callStartTime = data.start || new Date();
     socket.callClient = data.client || "Sem cliente";
+    activeCalls.push({ username: data.username, client: data.client });
+    io.emit("updateActiveCalls", activeCalls);
     io.emit("notify", `📞 ${data.username} iniciou uma chamada com ${data.client}`);
   });
 
@@ -92,8 +96,16 @@ io.on("connection", (socket) => {
     };
 
     await Call.create(callData);
+
+    // Remover da lista de chamadas ativas
+    const index = activeCalls.findIndex(call => call.username === data.username);
+    if (index !== -1) {
+      activeCalls.splice(index, 1);
+    }
+
     const history = await Call.find().sort({ end: -1 }).limit(100);
     io.emit("updateHistory", history);
+    io.emit("updateActiveCalls", activeCalls);
     io.emit("notify", `✅ ${data.username} terminou a chamada com ${callData.client}`);
   });
 
@@ -106,13 +118,21 @@ io.on("connection", (socket) => {
     if (currentUser) {
       onlineUsers = onlineUsers.filter(u => u !== currentUser);
       delete userStatusMap[currentUser];
+
+      // Se o utilizador estava em chamada, remover também
+      const index = activeCalls.findIndex(call => call.username === currentUser);
+      if (index !== -1) {
+        activeCalls.splice(index, 1);
+      }
+
       io.emit("updateOnlineUsers", onlineUsers);
+      io.emit("updateActiveCalls", activeCalls);
       io.emit("notify", `${currentUser} saiu da aplicação`);
     }
   });
 });
 
-// Iniciar servidor
+// Start do servidor
 const PORT = process.env.PORT || 10000;
 server.listen(PORT, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);

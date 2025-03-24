@@ -1,7 +1,7 @@
 {
   "name": "suporte-app-premium",
   "version": "1.0.0",
-  "description": "Dashboard de suporte com histórico, chamadas, gestão de estado e notificações.",
+  "description": "Dashboard de suporte com chamadas em tempo real, histórico, notificações, exportação e controlo de utilizadores.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -10,12 +10,13 @@
     "suporte",
     "dashboard",
     "chamadas",
-    "histórico",
+    "realtime",
     "socket.io",
     "express",
-    "nodejs",
     "mongodb",
-    "voip"
+    "historico",
+    "voip",
+    "notificacoes"
   ],
   "author": "devop15",
   "license": "MIT",

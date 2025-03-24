@@ -2,6 +2,7 @@ const socket = io();
 let startTime = null;
 let timerInterval = null;
 let historyData = [];
+let activeCalls = [];
 
 const username = new URLSearchParams(window.location.search).get("user") || localStorage.getItem("loggedInUser") || "user1";
 document.getElementById("username").innerText = username;
@@ -68,6 +69,22 @@ socket.on("updateHistory", (history) => {
   updateUserFilterOptions();
 });
 
+// Lista de chamadas ativas ao vivo
+socket.on("updateActiveCalls", (calls) => {
+  activeCalls = calls;
+  const list = document.getElementById("activeCallsList");
+  list.innerHTML = "";
+  if (activeCalls.length === 0) {
+    list.innerHTML = "<li>Nenhuma chamada ativa</li>";
+  } else {
+    activeCalls.forEach(call => {
+      const li = document.createElement("li");
+      li.innerText = `${call.username} com ${call.client}`;
+      list.appendChild(li);
+    });
+  }
+});
+
 // Limpar histórico visual
 document.getElementById("clearVisualHistory").addEventListener("click", () => {
   document.getElementById("historyList").innerHTML = "";
@@ -91,8 +108,8 @@ document.getElementById("exportBtn").addEventListener("click", () => {
   URL.revokeObjectURL(url);
 });
 
-// Filtro por utilizador
-document.getElementById("filterUser").addEventListener("change", renderHistory);
+// Aplicar filtro (botão)
+document.getElementById("applyFilterBtn").addEventListener("click", renderHistory);
 
 function renderHistory() {
   const userFilter = document.getElementById("filterUser").value;
@@ -150,7 +167,7 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   window.location.href = "login.html";
 });
 
-// Botão apagar histórico (Mongo)
+// Apagar histórico
 document.getElementById("deleteHistory").addEventListener("click", () => {
   if (confirm("Tens a certeza que queres eliminar o histórico de chamadas?")) {
     fetch("/api/delete-history", { method: "DELETE" })
@@ -164,7 +181,7 @@ document.getElementById("deleteHistory").addEventListener("click", () => {
   }
 });
 
-// Botão recuperar histórico
+// Recuperar histórico
 document.getElementById("recoverHistory").addEventListener("click", () => {
   fetch("/api/load-history")
     .then(res => res.json())
