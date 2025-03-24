@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Suporte</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="light-theme">
+  <div class="login-container">
+    <h1>Login da Equipa de Suporte</h1>
+    <form id="loginForm">
+      <div class="input-group">
+        <label for="username">Utilizador:</label>
+        <input type="text" id="username" required placeholder="Ex: user1" />
+      </div>
+      <div class="input-group">
+        <label for="password">Senha:</label>
+        <input type="password" id="password" required placeholder="Ex: pass1" />
+      </div>
+      <button type="submit" class="status-button start">Entrar</button>
+    </form>
+  </div>
+
+  <script>
+    const users = [
+      { username: "user1", password: "pass1" },
+      { username: "user2", password: "pass2" }
+    ];
+
+    document.getElementById("loginForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const valid = users.find(u => u.username === username && u.password === password);
+      if (valid) {
+        localStorage.setItem("loggedInUser", username);
+        window.location.href = "index.html";
+      } else {
+        alert("Credenciais inválidas");
+      }
+    });
+
+    // Aplicar tema
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+      document.body.classList.add("dark-theme");
+    }
+  </script>
+</body>
+</html>
