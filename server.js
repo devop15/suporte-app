@@ -32,7 +32,7 @@ const Call = mongoose.model("Call", callSchema);
 
 // Utilizadores online + estado
 let onlineUsers = [];
-const userStatusMap = {}; // { user1: "disponível", user2: "ocupado" }
+const userStatusMap = {}; // { Pedro Robalo: "disponível", user2: "ocupado" }
 
 // Rota opcional de login
 app.post("/login", (req, res) => {
