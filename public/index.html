@@ -16,6 +16,7 @@
       Utilizador: <em id="username">user1</em>
       <span id="status-indicator" class="status-tag">🟢 disponível</span>
       <button id="toggleThemeBtn" title="Alternar tema">🌙</button>
+      <button id="logoutBtn" title="Sair">🚪 Logout</button>
     </div>
   </header>
 
@@ -26,6 +27,7 @@
       <h2>Estado da Chamada</h2>
       <div class="status-display" id="statusDisplay">Nenhuma chamada ativa</div>
       <div class="status-buttons">
+        <input type="text" id="clientName" placeholder="Nome do cliente" />
         <button class="status-button start" id="startBtn">Iniciar Chamada</button>
         <button class="status-button end" id="endBtn" disabled>Terminar Chamada</button>
         <select id="userStatus" title="Estado atual">
@@ -45,6 +47,7 @@
           <option value="">Todos</option>
         </select>
         <button id="exportBtn">📤 Exportar CSV</button>
+        <button id="clearVisualHistory">🧹 Limpar da tela</button>
       </div>
       <ul id="historyList"></ul>
     </section>

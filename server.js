@@ -21,19 +21,20 @@ mongoose.connect(MONGODB_URI, {
   useUnifiedTopology: true,
 });
 
-// Esquema do histórico de chamadas
+// Schema atualizado para incluir o cliente
 const callSchema = new mongoose.Schema({
   username: String,
+  client: String,
   start: Date,
   end: Date,
 });
 const Call = mongoose.model("Call", callSchema);
 
-// Estado dos utilizadores online
+// Utilizadores online + estado
 let onlineUsers = [];
 const userStatusMap = {}; // { user1: "disponível", user2: "ocupado" }
 
-// Endpoint básico de login (opcional)
+// Rota opcional de login
 app.post("/login", (req, res) => {
   const { username } = req.body;
   if (username) {
@@ -43,7 +44,7 @@ app.post("/login", (req, res) => {
   }
 });
 
-// Socket.IO
+// WebSocket
 io.on("connection", (socket) => {
   let currentUser = null;
 
@@ -52,26 +53,29 @@ io.on("connection", (socket) => {
     if (!onlineUsers.includes(username)) {
       onlineUsers.push(username);
     }
-    io.emit("updateOnlineUsers", onlineUsers);
     userStatusMap[username] = "disponível";
+    io.emit("updateOnlineUsers", onlineUsers);
     io.emit("notify", `${username} entrou na aplicação`);
   });
 
   socket.on("startCall", (data) => {
     socket.callStartTime = data.start || new Date();
-    io.emit("notify", `📞 ${data.username} iniciou uma chamada`);
+    socket.callClient = data.client || "Sem cliente";
+    io.emit("notify", `📞 ${data.username} iniciou uma chamada com ${data.client}`);
   });
 
   socket.on("endCall", async (data) => {
     const callData = {
       username: data.username,
+      client: data.client || socket.callClient || "Sem cliente",
       start: socket.callStartTime || new Date(),
-      end: data.end || new Date(),
+      end: data.end || new Date()
     };
+
     await Call.create(callData);
     const history = await Call.find().sort({ end: -1 }).limit(100);
     io.emit("updateHistory", history);
-    io.emit("notify", `✅ ${data.username} terminou a chamada`);
+    io.emit("notify", `✅ ${data.username} terminou a chamada com ${callData.client}`);
   });
 
   socket.on("updateStatus", ({ username, status }) => {
