@@ -9,7 +9,6 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
@@ -21,7 +20,7 @@ mongoose.connect(MONGODB_URI, {
   useUnifiedTopology: true,
 });
 
-// Schema atualizado para incluir o cliente
+// Schema atualizado
 const callSchema = new mongoose.Schema({
   username: String,
   client: String,
@@ -30,17 +29,37 @@ const callSchema = new mongoose.Schema({
 });
 const Call = mongoose.model("Call", callSchema);
 
-// Utilizadores online + estado
+// Estado dos utilizadores online
 let onlineUsers = [];
-const userStatusMap = {}; // { Pedro Robalo: "disponível", user2: "ocupado" }
+const userStatusMap = {};
 
-// Rota opcional de login
+// Rota: login básico
 app.post("/login", (req, res) => {
   const { username } = req.body;
   if (username) {
     res.status(200).json({ success: true });
   } else {
     res.status(400).json({ error: "Utilizador inválido" });
+  }
+});
+
+// Rota: apagar histórico
+app.delete("/api/delete-history", async (req, res) => {
+  try {
+    await Call.deleteMany({});
+    res.status(200).json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao apagar histórico" });
+  }
+});
+
+// Rota: recuperar histórico completo
+app.get("/api/load-history", async (req, res) => {
+  try {
+    const history = await Call.find().sort({ end: -1 }).limit(100);
+    res.json(history);
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao recuperar histórico" });
   }
 });
 
@@ -93,7 +112,7 @@ io.on("connection", (socket) => {
   });
 });
 
-// Start do servidor
+// Iniciar servidor
 const PORT = process.env.PORT || 10000;
 server.listen(PORT, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);

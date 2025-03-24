@@ -1,7 +1,7 @@
 {
   "name": "suporte-app-premium",
   "version": "1.0.0",
-  "description": "Dashboard de suporte com histórico de chamadas, notificações, exportação, estatísticas e tema escuro.",
+  "description": "Dashboard de suporte com histórico, chamadas, gestão de estado e notificações.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -10,13 +10,12 @@
     "suporte",
     "dashboard",
     "chamadas",
+    "histórico",
     "socket.io",
     "express",
-    "node",
+    "nodejs",
     "mongodb",
-    "csv",
-    "notificações",
-    "dark-mode"
+    "voip"
   ],
   "author": "devop15",
   "license": "MIT",

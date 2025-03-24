@@ -65,7 +65,6 @@ socket.on("updateOnlineUsers", (users) => {
 socket.on("updateHistory", (history) => {
   historyData = history;
   renderHistory();
-  updateChart();
   updateUserFilterOptions();
 });
 
@@ -145,44 +144,36 @@ if (localStorage.getItem("theme") === "dark") {
   toggleThemeBtn.textContent = "☀️";
 }
 
-// Gráfico de chamadas (filtra chamadas válidas)
-let chart;
-function updateChart() {
-  const ctx = document.getElementById("chartCanvas").getContext("2d");
-  const dataMap = {};
-
-  historyData
-    .filter(item => item.start)
-    .forEach(item => {
-      const date = new Date(item.start).toLocaleDateString();
-      dataMap[date] = (dataMap[date] || 0) + 1;
-    });
-
-  const labels = Object.keys(dataMap);
-  const values = Object.values(dataMap);
-
-  if (chart) chart.destroy();
-  chart = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [{
-        label: "Chamadas por dia",
-        data: values,
-        backgroundColor: "#4f46e5"
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false } }
-    }
-  });
-}
-
 // Logout
 document.getElementById("logoutBtn").addEventListener("click", () => {
   localStorage.removeItem("loggedInUser");
   window.location.href = "login.html";
+});
+
+// Botão apagar histórico (Mongo)
+document.getElementById("deleteHistory").addEventListener("click", () => {
+  if (confirm("Tens a certeza que queres eliminar o histórico de chamadas?")) {
+    fetch("/api/delete-history", { method: "DELETE" })
+      .then(res => {
+        if (res.ok) {
+          historyData = [];
+          renderHistory();
+          notify("Histórico eliminado com sucesso.");
+        }
+      });
+  }
+});
+
+// Botão recuperar histórico
+document.getElementById("recoverHistory").addEventListener("click", () => {
+  fetch("/api/load-history")
+    .then(res => res.json())
+    .then(data => {
+      historyData = data;
+      renderHistory();
+      updateUserFilterOptions();
+      notify("Histórico recuperado com sucesso.");
+    });
 });
 
 // Iniciar app
