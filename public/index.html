@@ -2,80 +2,41 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard de Suporte</title>
+  <title>Suporte App - Dashboard</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body class="light-theme">
-  <div class="top-bar">
-    <div class="user-info">
-      👤 <span id="userDisplay">Utilizador</span>
+<body>
+  <header class="top-bar">
+    <div class="logo-area">
+      <img src="logo.png" alt="Logo" class="logo" />
+      <span>Suporte App</span>
     </div>
-    <div class="top-buttons">
-      <button id="themeToggle" class="theme-button">🌙</button>
-      <button id="logoutButton" class="logout-button">Logout</button>
-    </div>
-  </div>
+    <div class="top-user">Utilizador: <em id="username">user1</em></div>
+  </header>
 
   <div class="container">
-    <h1>Dashboard da Equipa de Suporte</h1>
-
-    <section class="status-section">
-      <div class="input-group">
-        <label for="collaboratorName">Nome do Colaborador:</label>
-        <input type="text" id="collaboratorName" placeholder="Digite seu nome" />
-      </div>
-
-      <div class="input-group">
-        <label for="callTag">Tipo de Chamada:</label>
-        <select id="callTag">
-          <option value="Geral">Geral</option>
-          <option value="Técnico">Técnico</option>
-          <option value="Comercial">Comercial</option>
-          <option value="Interno">Interno</option>
-        </select>
-      </div>
-
+    <section>
+      <h2>Estado da Chamada</h2>
+      <div class="status-display" id="statusDisplay">Nenhuma chamada ativa</div>
       <div class="status-buttons">
-        <button class="status-button start" onclick="startCall()" id="startButton">Iniciar Chamada</button>
-        <button class="status-button end" onclick="endCall()" id="endButton" disabled>Finalizar Chamada</button>
+        <button class="status-button start" id="startBtn">Iniciar Chamada</button>
+        <button class="status-button end" id="endBtn" disabled>Terminar Chamada</button>
       </div>
-
-      <div class="status-display" id="statusDisplay">Estado atual: Nenhum</div>
-      <div class="timer" id="callTimer"></div>
+      <div class="timer" id="timerDisplay"></div>
     </section>
 
-    <section class="online-users">
-      <h2>Utilizadores Online</h2>
-      <ul id="onlineList"></ul>
-    </section>
-
-    <section class="filters">
-      <h2>Histórico de Chamadas</h2>
-      <div class="filter-group">
-        <input type="text" id="filterName" placeholder="Filtrar por nome" />
-        <select id="filterTag">
-          <option value="">Todas as Tags</option>
-          <option value="Geral">Geral</option>
-          <option value="Técnico">Técnico</option>
-          <option value="Comercial">Comercial</option>
-          <option value="Interno">Interno</option>
-        </select>
-        <input type="date" id="filterDate" />
-        <button onclick="applyFilters()">Filtrar</button>
-        <button onclick="exportCSV()">📤 Exportar CSV</button>
-      </div>
+    <section>
+      <h2>Histórico</h2>
       <ul id="historyList"></ul>
     </section>
 
-    <section class="personal-report">
-      <h2>Meu Relatório</h2>
-      <button onclick="showPersonalHistory()">Ver apenas minhas chamadas</button>
+    <section>
+      <h2>Utilizadores Online</h2>
+      <ul id="onlineList"></ul>
     </section>
-
-    <div id="notifications" class="notifications"></div>
   </div>
 
+  <div class="notifications" id="notifications"></div>
   <script src="/socket.io/socket.io.js"></script>
   <script src="script.js"></script>
 </body>

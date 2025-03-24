@@ -1,18 +1,18 @@
 {
   "name": "suporte-app-premium",
   "version": "1.0.0",
-  "description": "App de suporte completo com dashboard, filtros, tempo real e exportação",
+  "description": "Dashboard de suporte com chamadas, histórico e utilizadores online",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
+  "keywords": [],
+  "author": "devop15",
+  "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "mongoose": "^7.6.1",
     "socket.io": "^4.7.2"
-  },
-  "engines": {
-    "node": ">=16"
   }
 }
