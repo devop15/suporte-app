@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acompanhamento de Equipa de Suporte</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="light-theme">
+    <div class="container">
+        <!-- Logotipo da App -->
+        <img src="logo.png" alt="Logotipo da App" class="logo">
+
+        <!-- Botão de Alternar Tema e Logout -->
+        <div class="top-buttons">
+            <button id="themeToggle" class="theme-button">🌙</button>
+            <button id="logoutButton" class="logout-button">Logout</button>
+        </div>
+
+        <h1>Acompanhamento de Equipa de Suporte</h1>
+        <div class="input-group">
+            <label for="collaboratorName">Nome do Colaborador:</label>
+            <input type="text" id="collaboratorName" placeholder="Digite seu nome">
+        </div>
+        <div class="status-buttons">
+            <button class="status-button start" onclick="startCall()" id="startButton">Iniciar Chamada</button>
+            <button class="status-button end" onclick="endCall()" id="endButton" disabled>Finalizar Chamada</button>
+        </div>
+        <div class="status-display" id="statusDisplay">
+            Estado atual: Nenhum
+        </div>
+        <div class="history">
+            <h2>Histórico de Chamadas</h2>
+            <ul id="historyList"></ul>
+        </div>
+
+        <!-- Área de Notificações -->
+        <div id="notifications" class="notifications"></div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

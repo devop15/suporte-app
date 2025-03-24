@@ -1,0 +1,230 @@
+/* Estilos Gerais */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.container {
+    background-color: var(--container-bg);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.logo {
+    max-width: 150px;
+    margin-bottom: 20px;
+    transition: transform 0.3s;
+}
+
+.logo:hover {
+    transform: scale(1.1);
+}
+
+h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: var(--text-color);
+}
+
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 16px;
+    color: var(--text-color);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--input-border);
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+.status-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.status-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.status-button.start {
+    background-color: #28a745;
+    color: white;
+}
+
+.status-button.end {
+    background-color: #dc3545;
+    color: white;
+}
+
+.status-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.status-button:hover {
+    transform: scale(1.05);
+}
+
+.status-display {
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: var(--text-color);
+    padding: 10px;
+    border-radius: 5px;
+    background-color: var(--status-bg);
+    transition: background-color 0.3s;
+}
+
+.status-display.active {
+    background-color: #ffcccb;
+    font-weight: bold;
+}
+
+.history {
+    text-align: left;
+}
+
+.history h2 {
+    font-size: 20px;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.history ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.history ul li {
+    background-color: var(--history-item-bg);
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid var(--history-item-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.history ul li span {
+    font-size: 14px;
+    color: var(--text-color);
+}
+
+/* Estilos para os Botões Superiores */
+.top-buttons {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.theme-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.theme-button:hover {
+    transform: rotate(180deg);
+}
+
+.logout-button {
+    background-color: #dc3545;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.logout-button:hover {
+    background-color: #c82333;
+    transform: scale(1.05);
+}
+
+/* Estilos para Notificações */
+.notifications {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.notification {
+    background-color: var(--notification-bg);
+    color: var(--text-color);
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* Temas */
+:root {
+    --container-bg: #fff;
+    --text-color: #333;
+    --input-bg: #f9f9f9;
+    --input-border: #ccc;
+    --status-bg: #f9f9f9;
+    --history-item-bg: #f9f9f9;
+    --history-item-border: #ddd;
+    --notification-bg: #28a745;
+}
+
+.dark-theme {
+    --container-bg: #333;
+    --text-color: #fff;
+    --input-bg: #444;
+    --input-border: #666;
+    --status-bg: #444;
+    --history-item-bg: #444;
+    --history-item-border: #666;
+    --notification-bg: #333;

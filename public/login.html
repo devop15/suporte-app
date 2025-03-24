@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Estilos específicos para a página de login */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--container-bg);
+        }
+
+        .container {
+            background-color: var(--container-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: var(--text-color);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 16px;
+            color: var(--text-color);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--input-border);
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+
+        .status-button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .status-button.start {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .status-button.start:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="light-theme">
+    <div class="container">
+        <h1>Login</h1>
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="username">Nome de Utilizador:</label>
+                <input type="text" id="username" placeholder="Nome de utilizador" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+            <button type="submit" class="status-button start">Entrar</button>
+        </form>
+    </div>
+    <script>
+        // Simulação de autenticação
+        const users = [
+            { username: "user1", password: "pass1" },
+            { username: "user2", password: "pass2" },
+        ];
+
+        // Login
+        document.getElementById("loginForm").addEventListener("submit", (e) => {
+            e.preventDefault();
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const user = users.find((u) => u.username === username && u.password === password);
+            if (user) {
+                localStorage.setItem("loggedInUser", username);
+                window.location.href = "index.html";
+            } else {
+                alert("Nome de utilizador ou senha incorretos.");
+            }
+        });
+
+        // Aplicar tema salvo
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "dark") {
+            document.body.classList.add("dark-theme");
+        }
+    </script>
+</body>
+</html>
