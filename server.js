@@ -13,7 +13,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Conexão MongoDB
 mongoose
-  .connect("mongodb+srv://<USUÁRIO>:<SENHA>@<CLUSTER>.mongodb.net/suporteApp?retryWrites=true&w=majority", {
+  .connect("mongodb+srv://admin:admin123@CLUSTER.mongodb.net/suporteApp?retryWrites=true&w=majority", {
     useNewUrlParser: true,
     useUnifiedTopology: true
   })
