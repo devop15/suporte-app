@@ -2,58 +2,127 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8" />
-  <title>Autenticação - Suporte App</title>
+  <title>Login - Suporte App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: var(--bg);
+    }
+    .login-container {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    .login-container h1 {
+      margin-bottom: 1.5rem;
+    }
+    .login-container img {
+      width: 60px;
+      margin-bottom: 1rem;
+    }
+    .login-container form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .login-container input {
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+    .login-container button {
+      background: var(--primary);
+      color: white;
+      padding: 0.75rem;
+      font-weight: bold;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .login-container .switch-mode {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .login-container .error {
+      color: var(--danger);
+      font-size: 0.9rem;
+    }
+    body.dark-theme .login-container {
+      background: #1f2937;
+      color: #f3f4f6;
+    }
+    body.dark-theme input {
+      background: #374151;
+      color: white;
+      border: 1px solid #4b5563;
+    }
+  </style>
 </head>
 <body>
   <div class="login-container">
-    <img src="logo.png" alt="Logo" class="logo login-logo" />
-    <h1 id="formTitle">Entrar no Suporte App</h1>
+    <img src="logo.png" alt="Logo" />
+    <h1 id="formTitle">Entrar no Suporte</h1>
 
-    <!-- Formulário de Login -->
-    <form id="loginForm" class="auth-form">
-      <input type="text" id="loginUsername" placeholder="Utilizador" required />
-      <input type="password" id="loginPassword" placeholder="Palavra-passe" required />
-      <button type="submit">Entrar</button>
-      <p class="switch-link">Ainda não tens conta? <a href="#" id="showRegister">Criar conta</a></p>
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="Utilizador" required />
+      <input type="password" id="password" placeholder="Palavra-passe" required />
+      <button type="submit" id="submitBtn">Entrar</button>
+      <div class="error" id="errorMsg"></div>
     </form>
 
-    <!-- Formulário de Registo -->
-    <form id="registerForm" class="auth-form hidden">
-      <input type="text" id="registerUsername" placeholder="Novo utilizador" required />
-      <input type="password" id="registerPassword" placeholder="Nova palavra-passe" required />
-      <button type="submit">Criar Conta</button>
-      <p class="switch-link">Já tens conta? <a href="#" id="showLogin">Entrar</a></p>
-    </form>
+    <div class="switch-mode" id="switchMode">Ainda não tens conta? Regista-te</div>
   </div>
 
   <script>
-    const loginForm = document.getElementById("loginForm");
-    const registerForm = document.getElementById("registerForm");
+    const form = document.getElementById("loginForm");
+    const errorMsg = document.getElementById("errorMsg");
+    const switchMode = document.getElementById("switchMode");
     const formTitle = document.getElementById("formTitle");
+    const submitBtn = document.getElementById("submitBtn");
 
-    // Alternar entre login e registo
-    document.getElementById("showRegister").onclick = (e) => {
+    let isLogin = true;
+
+    // Tema escuro automático
+    if (localStorage.getItem("theme") === "dark") {
+      document.body.classList.add("dark-theme");
+    }
+
+    switchMode.addEventListener("click", () => {
+      isLogin = !isLogin;
+      formTitle.innerText = isLogin ? "Entrar no Suporte" : "Criar Conta";
+      submitBtn.innerText = isLogin ? "Entrar" : "Registar";
+      switchMode.innerText = isLogin
+        ? "Ainda não tens conta? Regista-te"
+        : "Já tens conta? Faz login";
+      errorMsg.innerText = "";
+    });
+
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      loginForm.classList.add("hidden");
-      registerForm.classList.remove("hidden");
-      formTitle.textContent = "Criar nova conta";
-    };
+      errorMsg.innerText = "";
 
-    document.getElementById("showLogin").onclick = (e) => {
-      e.preventDefault();
-      registerForm.classList.add("hidden");
-      loginForm.classList.remove("hidden");
-      formTitle.textContent = "Entrar no Suporte App";
-    };
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      if (!username || !password) {
+        errorMsg.innerText = "Preenche todos os campos.";
+        return;
+      }
 
-    // Login
-    loginForm.onsubmit = async (e) => {
-      e.preventDefault();
-      const username = loginForm.loginUsername.value.trim();
-      const password = loginForm.loginPassword.value;
-
-      const res = await fetch("/api/login", {
+      const endpoint = isLogin ? "/api/login" : "/api/register";
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password })
@@ -63,37 +132,10 @@
         localStorage.setItem("loggedInUser", username);
         window.location.href = `index.html?user=${username}`;
       } else {
-        alert("Credenciais inválidas");
+        const text = await res.text();
+        errorMsg.innerText = text || "Ocorreu um erro.";
       }
-    };
-
-    // Criar Conta
-    registerForm.onsubmit = async (e) => {
-      e.preventDefault();
-      const username = registerForm.registerUsername.value.trim();
-      const password = registerForm.registerPassword.value;
-
-      const res = await fetch("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
-      });
-
-      if (res.ok) {
-        alert("Conta criada com sucesso! Podes entrar agora.");
-        registerForm.classList.add("hidden");
-        loginForm.classList.remove("hidden");
-        formTitle.textContent = "Entrar no Suporte App";
-      } else {
-        const msg = await res.text();
-        alert("Erro ao criar conta: " + msg);
-      }
-    };
-
-    // Dark mode automático
-    if (localStorage.getItem("theme") === "dark") {
-      document.body.classList.add("dark-theme");
-    }
+    });
   </script>
 </body>
 </html>

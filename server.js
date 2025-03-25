@@ -39,12 +39,24 @@ const Call = mongoose.model("Call", callSchema);
 
 // Estado
 let onlineUsers = [];
-const activeCalls = [];
+let activeCalls = [];
 const userStatusMap = {};
+
+// Função para emitir utilizadores com estado
+function emitOnlineUsersWithStatus() {
+  const usersWithStatus = onlineUsers.map(username => {
+    const isInCall = activeCalls.find(c => c.username === username);
+    return {
+      username,
+      status: isInCall ? "em chamada" : (userStatusMap[username] || "disponível")
+    };
+  });
+
+  io.emit("updateOnlineUsersStatus", usersWithStatus);
+}
 
 // ROTAS API
 
-// Registo
 app.post("/api/register", async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) return res.status(400).send("Dados inválidos");
@@ -57,7 +69,6 @@ app.post("/api/register", async (req, res) => {
   res.status(201).json({ success: true });
 });
 
-// Login
 app.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) return res.status(400).send("Dados inválidos");
@@ -71,7 +82,6 @@ app.post("/api/login", async (req, res) => {
   res.status(200).json({ success: true });
 });
 
-// Apagar histórico
 app.delete("/api/delete-history", async (req, res) => {
   try {
     await Call.deleteMany({});
@@ -81,7 +91,6 @@ app.delete("/api/delete-history", async (req, res) => {
   }
 });
 
-// Carregar histórico
 app.get("/api/load-history", async (req, res) => {
   try {
     const history = await Call.find().sort({ end: -1 }).limit(100);
@@ -101,7 +110,7 @@ io.on("connection", (socket) => {
       onlineUsers.push(username);
     }
     userStatusMap[username] = "disponível";
-    io.emit("updateOnlineUsers", onlineUsers);
+    emitOnlineUsersWithStatus();
     io.emit("updateActiveCalls", activeCalls);
     io.emit("notify", `${username} entrou na aplicação`);
   });
@@ -110,6 +119,7 @@ io.on("connection", (socket) => {
     socket.callStartTime = data.start || new Date();
     socket.callClient = data.client || "Sem cliente";
     activeCalls.push({ username: data.username, client: data.client });
+    emitOnlineUsersWithStatus();
     io.emit("updateActiveCalls", activeCalls);
     io.emit("notify", `📞 ${data.username} iniciou uma chamada com ${data.client}`);
   });
@@ -123,10 +133,10 @@ io.on("connection", (socket) => {
     };
 
     await Call.create(callData);
-    const index = activeCalls.findIndex(call => call.username === data.username);
-    if (index !== -1) activeCalls.splice(index, 1);
+    activeCalls = activeCalls.filter(call => call.username !== data.username);
 
     const history = await Call.find().sort({ end: -1 }).limit(100);
+    emitOnlineUsersWithStatus();
     io.emit("updateHistory", history);
     io.emit("updateActiveCalls", activeCalls);
     io.emit("notify", `✅ ${data.username} terminou a chamada com ${callData.client}`);
@@ -134,10 +144,10 @@ io.on("connection", (socket) => {
 
   socket.on("updateStatus", ({ username, status }) => {
     userStatusMap[username] = status;
+    emitOnlineUsersWithStatus();
     io.emit("notify", `${username} está agora ${status}`);
   });
 
-  // Chat em tempo real
   socket.on("chatMessage", (data) => {
     io.emit("chatMessage", {
       username: data.username,
@@ -149,9 +159,8 @@ io.on("connection", (socket) => {
     if (currentUser) {
       onlineUsers = onlineUsers.filter(u => u !== currentUser);
       delete userStatusMap[currentUser];
-      const index = activeCalls.findIndex(call => call.username === currentUser);
-      if (index !== -1) activeCalls.splice(index, 1);
-      io.emit("updateOnlineUsers", onlineUsers);
+      activeCalls = activeCalls.filter(call => call.username !== currentUser);
+      emitOnlineUsersWithStatus();
       io.emit("updateActiveCalls", activeCalls);
       io.emit("notify", `${currentUser} saiu da aplicação`);
     }

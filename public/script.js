@@ -66,7 +66,7 @@ document.getElementById("endBtn").addEventListener("click", () => {
 // Atualizar estado
 document.getElementById("userStatus").addEventListener("change", (e) => {
   const status = e.target.value;
-  document.getElementById("status-indicator").innerText = `ðŸŸ¢ ${status}`;
+  document.getElementById("status-indicator").innerText = `?? ${status}`;
   socket.emit("updateStatus", { username, status });
 });
 
@@ -74,7 +74,7 @@ document.getElementById("userStatus").addEventListener("change", (e) => {
 document.getElementById("exportBtn").addEventListener("click", () => {
   if (!historyData.length) return alert("Sem dados para exportar");
 
-  let csv = "Utilizador,Cliente,InÃ­cio,Fim\n";
+  let csv = "Utilizador,Cliente,In¨ªcio,Fim\n";
   historyData.forEach(c => {
     const start = new Date(c.start).toLocaleString();
     const end = new Date(c.end).toLocaleString();
@@ -88,16 +88,16 @@ document.getElementById("exportBtn").addEventListener("click", () => {
   a.click();
 });
 
-// Apagar histÃ³rico (definitivo)
+// Apagar hist¨®rico (definitivo)
 document.getElementById("deleteHistory").addEventListener("click", async () => {
-  if (confirm("Apagar histÃ³rico permanentemente?")) {
+  if (confirm("Apagar hist¨®rico permanentemente?")) {
     await fetch("/api/delete-history", { method: "DELETE" });
     historyData = [];
     renderHistory([]);
   }
 });
 
-// Recuperar histÃ³rico do servidor
+// Recuperar hist¨®rico do servidor
 document.getElementById("recoverHistory").addEventListener("click", async () => {
   const res = await fetch("/api/load-history");
   const data = await res.json();
@@ -110,7 +110,7 @@ document.getElementById("clearVisualHistory").addEventListener("click", () => {
   document.getElementById("historyList").innerHTML = "";
 });
 
-// Aplicar filtro de histÃ³rico
+// Aplicar filtro de hist¨®rico
 document.getElementById("applyFilterBtn").addEventListener("click", () => {
   const selectedUser = document.getElementById("filterUser").value;
   const filtered = selectedUser
@@ -119,7 +119,7 @@ document.getElementById("applyFilterBtn").addEventListener("click", () => {
   renderHistory(filtered);
 });
 
-// Renderizar histÃ³rico
+// Renderizar hist¨®rico
 function renderHistory(data) {
   const list = document.getElementById("historyList");
   list.innerHTML = "";
@@ -129,7 +129,7 @@ function renderHistory(data) {
     const li = document.createElement("li");
     const start = item.start ? new Date(item.start).toLocaleString() : "Desconhecido";
     const end = item.end ? new Date(item.end).toLocaleString() : "Desconhecido";
-    li.textContent = `${item.username} - ${item.client} â†’ ${start} â†’ ${end}`;
+    li.textContent = `${item.username} - ${item.client} ¡ú ${start} ¡ú ${end}`;
     list.appendChild(li);
     usersSet.add(item.username);
   });
@@ -143,22 +143,7 @@ function renderHistory(data) {
   });
 }
 
-// AtualizaÃ§Ãµes em tempo real
-socket.on("updateHistory", (data) => {
-  historyData = data;
-  renderHistory(data);
-});
-
-socket.on("updateOnlineUsers", (users) => {
-  const list = document.getElementById("onlineList");
-  list.innerHTML = "";
-  users.forEach(user => {
-    const li = document.createElement("li");
-    li.textContent = user;
-    list.appendChild(li);
-  });
-});
-
+// Ativos em chamada
 socket.on("updateActiveCalls", (calls) => {
   activeCalls = calls;
   const list = document.getElementById("activeCallsList");
@@ -170,7 +155,29 @@ socket.on("updateActiveCalls", (calls) => {
   });
 });
 
-// NotificaÃ§Ãµes
+// Online com estado
+socket.on("updateOnlineUsersStatus", (users) => {
+  const list = document.getElementById("onlineList");
+  list.innerHTML = "";
+
+  users.forEach(user => {
+    const li = document.createElement("li");
+    if (user.status === "em chamada") {
+      li.innerHTML = `<span style="color: red;">?? ${user.username} (${user.status})</span>`;
+    } else {
+      li.innerHTML = `<span style="color: green;">?? ${user.username} (${user.status})</span>`;
+    }
+    list.appendChild(li);
+  });
+});
+
+// Hist¨®rico
+socket.on("updateHistory", (data) => {
+  historyData = data;
+  renderHistory(data);
+});
+
+// Notifica??es
 socket.on("notify", (msg) => {
   const note = document.createElement("div");
   note.className = "notification";
