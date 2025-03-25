@@ -19,6 +19,7 @@ body {
   color: var(--text);
 }
 
+/* Layout */
 .app-layout {
   display: flex;
   height: 100vh;
@@ -33,7 +34,6 @@ body {
   flex-direction: column;
   padding: 1rem;
 }
-
 .sidebar-logo {
   display: flex;
   align-items: center;
@@ -46,7 +46,6 @@ body {
   font-size: 1.3rem;
   margin: 0;
 }
-
 .sidebar-menu {
   margin-top: 2rem;
   display: flex;
@@ -68,6 +67,7 @@ body {
   background: rgba(255, 255, 255, 0.1);
 }
 
+/* Topbar */
 .topbar {
   display: flex;
   justify-content: space-between;
@@ -75,9 +75,6 @@ body {
   background: var(--card-bg);
   padding: 1rem 2rem;
   border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 10;
 }
 .app-title {
   font-size: 1.2rem;
@@ -107,6 +104,7 @@ body {
   opacity: 0.7;
 }
 
+/* Conteúdo */
 .content-area {
   flex: 1;
   display: flex;
@@ -118,13 +116,13 @@ body {
   max-width: 960px;
   margin: auto;
 }
-
 h2 {
   margin-top: 2.5rem;
   margin-bottom: 1rem;
   color: var(--text);
 }
 
+/* Chamadas */
 .status-display {
   padding: 1rem;
   background: #e0f2fe;
@@ -180,13 +178,64 @@ select {
   color: var(--text);
 }
 
+/* Histórico - Ações */
 .history-actions {
   display: flex;
-  align-items: center;
-  gap: 1rem;
   flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
   margin-bottom: 1rem;
 }
+.btn {
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn.icon {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.btn:hover {
+  background: #f3f4f6;
+}
+.btn.green {
+  background: var(--success);
+  color: white;
+}
+.btn.green:hover {
+  background: #059669;
+}
+.btn.red {
+  background: var(--danger);
+  color: white;
+}
+.btn.red:hover {
+  background: #dc2626;
+}
+.btn.blue {
+  background: var(--info);
+  color: white;
+}
+.btn.blue:hover {
+  background: #0369a1;
+}
+.btn.gray {
+  background: #e5e7eb;
+  color: #111827;
+}
+.btn.gray:hover {
+  background: #d1d5db;
+}
+
+/* Listas */
 #historyList li,
 #onlineList li,
 #activeCallsList li {
@@ -198,7 +247,7 @@ select {
   box-shadow: 0 1px 3px var(--shadow);
 }
 
-/* ✅ Indicador de estado do utilizador */
+/* Indicador de estado do utilizador */
 .status-dot {
   display: inline-block;
   width: 10px;
@@ -213,40 +262,7 @@ select {
   background-color: #ef4444;
 }
 
-.notifications {
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-  z-index: 999;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-.notification {
-  background: var(--primary);
-  color: white;
-  padding: 0.8rem 1.2rem;
-  border-radius: 6px;
-  margin-top: 0.5rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-}
-
-.footer {
-  text-align: center;
-  padding: 1rem;
-  font-size: 0.85rem;
-  color: var(--muted);
-  background: var(--card-bg);
-  border-top: 1px solid var(--border);
-  margin-top: 2rem;
-}
-body.dark-theme .footer {
-  background: #1f2937;
-  color: #9ca3af;
-  border-top: 1px solid #374151;
-}
-
-/* CHAT */
+/* Chat */
 #chatMessages {
   max-height: 300px;
   overflow-y: auto;
@@ -279,7 +295,37 @@ body.dark-theme .footer {
   cursor: pointer;
 }
 
-/* DARK THEME */
+/* Notificações */
+.notifications {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.notification {
+  background: var(--primary);
+  color: white;
+  padding: 0.8rem 1.2rem;
+  border-radius: 6px;
+  margin-top: 0.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  background: var(--card-bg);
+  border-top: 1px solid var(--border);
+  margin-top: 2rem;
+}
+
+/* Dark Theme */
 body.dark-theme {
   background: #111827;
   color: #f3f4f6;
@@ -302,4 +348,18 @@ body.dark-theme .status-display {
 }
 body.dark-theme .menu-item:hover {
   background: rgba(255, 255, 255, 0.1);
+}
+body.dark-theme .btn.icon {
+  background: #374151;
+  color: white;
+  border-color: #4b5563;
+}
+body.dark-theme .btn.gray {
+  background: #4b5563;
+  color: white;
+}
+body.dark-theme .footer {
+  background: #1f2937;
+  color: #9ca3af;
+  border-top: 1px solid #374151;
 }

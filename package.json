@@ -1,15 +1,15 @@
 {
   "name": "suporte-app-premium",
   "version": "1.0.0",
-  "description": "Aplicação de suporte em tempo real com chat, histórico de chamadas, login seguro e tema escuro.",
+  "description": "Aplicação de suporte em tempo real com chamadas, histórico, chat, e login seguro.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
+  "keywords": ["suporte", "chamadas", "chat", "express", "socket.io", "mongo"],
   "author": "devop15",
   "license": "MIT",
   "dependencies": {
-    "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "mongoose": "^7.6.1",

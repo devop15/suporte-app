@@ -2,113 +2,93 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8" />
-  <title>Suporte App - Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Suporte App</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="app-layout">
-
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-logo">
         <img src="logo.png" alt="Logo" />
         <h1>Suporte</h1>
       </div>
-      <nav class="sidebar-menu">
-        <button class="menu-item" onclick="scrollToSection('section-call')">📞 Chamada</button>
-        <button class="menu-item" onclick="scrollToSection('section-history')">📜 Histórico</button>
-        <button class="menu-item" onclick="scrollToSection('section-active')">🟢 Em Chamada</button>
-        <button class="menu-item" onclick="scrollToSection('section-online')">👥 Online</button>
-        <button class="menu-item" onclick="scrollToSection('section-chat')">💬 Chat</button>
-      </nav>
+      <div class="sidebar-menu">
+        <button class="menu-item" id="logoutBtn">🚪 Sair</button>
+        <button class="menu-item" id="toggleThemeBtn">🌓 Tema</button>
+      </div>
     </aside>
 
+    <!-- Área Principal -->
     <main class="content-area">
-      <header class="topbar">
-        <div class="topbar-left">
-          <span class="app-title">Suporte App Premium</span>
-        </div>
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="app-title">Painel do Utilizador</div>
         <div class="topbar-right">
-          Utilizador: <strong id="username">user1</strong>
-          <span id="status-indicator" class="status-tag">🟢 disponível</span>
-          <button id="toggleThemeBtn">🌙</button>
-          <button id="logoutBtn">🚪 Logout</button>
+          <div class="status-tag" id="status-indicator">🟢 disponível</div>
+          <div><strong id="username">user</strong></div>
         </div>
-      </header>
+      </div>
 
       <div class="main-content">
-
-        <!-- Estado da Chamada -->
-        <section id="section-call">
-          <h2>Estado da Chamada</h2>
-          <div id="statusDisplay" class="status-display">Nenhuma chamada ativa</div>
-          <div class="status-buttons">
-            <input type="text" id="clientName" placeholder="Nome do cliente" />
-            <button id="startBtn" class="status-button start">Iniciar Chamada</button>
-            <button id="endBtn" class="status-button end" disabled>Terminar Chamada</button>
-            <select id="userStatus">
-              <option value="disponível">🟢 Disponível</option>
-              <option value="ocupado">🔴 Ocupado</option>
-            </select>
-          </div>
-          <div id="timerDisplay" class="timer"></div>
-        </section>
+        <!-- Chamadas -->
+        <h2>Gestão de Chamadas</h2>
+        <div class="status-display" id="statusDisplay">Nenhuma chamada ativa</div>
+        <div class="status-buttons">
+          <input type="text" id="clientName" placeholder="Nome do cliente" />
+          <button id="startBtn" class="status-button start">📞 Iniciar Chamada</button>
+          <button id="endBtn" class="status-button end" disabled>✅ Terminar Chamada</button>
+          <span id="timerDisplay"></span>
+          <select id="userStatus">
+            <option value="disponível">Disponível</option>
+            <option value="ausente">Ausente</option>
+            <option value="ocupado">Ocupado</option>
+          </select>
+        </div>
 
         <!-- Histórico -->
-        <section id="section-history">
-          <h2>Histórico de Chamadas</h2>
-          <div class="history-actions">
-            <label for="filterUser">Filtrar por utilizador:</label>
-            <select id="filterUser">
-              <option value="">Todos</option>
-            </select>
-            <button id="applyFilterBtn">🔍 Aplicar filtro</button>
-            <button id="exportBtn">📤 Exportar CSV</button>
-            <button id="clearVisualHistory">🧹 Limpar da tela</button>
-            <button id="deleteHistory">🗑️ Apagar histórico</button>
-            <button id="recoverHistory">📂 Recuperar histórico</button>
-          </div>
-          <ul id="historyList"></ul>
-        </section>
+        <h2>Histórico de Chamadas</h2>
+        <div class="history-actions">
+          <select id="filterUser">
+            <option value="">Todos</option>
+          </select>
+          <button class="btn icon" id="applyFilterBtn">🔍 Aplicar filtro</button>
+          <button class="btn icon green" id="exportBtn">📤 Exportar CSV</button>
+          <button class="btn icon gray" id="clearVisualHistory">🧹 Limpar da tela</button>
+          <button class="btn icon red" id="deleteHistory">🗑️ Apagar histórico</button>
+          <button class="btn icon blue" id="recoverHistory">📂 Recuperar histórico</button>
+        </div>
+        <ul id="historyList"></ul>
 
-        <!-- Em Chamada -->
-        <section id="section-active">
-          <h2>Utilizadores em chamada (ao vivo)</h2>
-          <ul id="activeCallsList"></ul>
-        </section>
+        <!-- Chamadas ativas -->
+        <h2>Utilizadores em chamada (ao vivo)</h2>
+        <ul id="activeCallsList"></ul>
 
-        <!-- Online -->
-        <section id="section-online">
-          <h2>Utilizadores Online</h2>
-          <ul id="onlineList"></ul>
-        </section>
+        <!-- Utilizadores online -->
+        <h2>Utilizadores Online</h2>
+        <ul id="onlineList"></ul>
 
         <!-- Chat -->
-        <section id="section-chat">
-          <h2>💬 Chat entre Utilizadores</h2>
-          <div id="chatMessages" class="chat-box"></div>
-          <form id="chatForm">
-            <input type="text" id="chatInput" placeholder="Escreve a tua mensagem..." autocomplete="off" />
-            <button type="submit">Enviar</button>
-          </form>
-        </section>
+        <h2>Chat</h2>
+        <div id="chatMessages"></div>
+        <form id="chatForm">
+          <input type="text" id="chatInput" placeholder="Escreve uma mensagem..." required />
+          <button type="submit">Enviar</button>
+        </form>
 
-        <!-- Rodapé -->
-        <footer class="footer">
-          Desenvolvido por <strong>devop15</strong> · &copy; 2025 Suporte App Premium
-        </footer>
+        <!-- Notificações -->
+        <div class="notifications" id="notifications"></div>
       </div>
+
+      <!-- Footer -->
+      <footer class="footer">
+        &copy; 2025 Suporte App. Todos os direitos reservados.
+      </footer>
     </main>
   </div>
 
-  <div id="notifications" class="notifications"></div>
   <script src="/socket.io/socket.io.js"></script>
   <script src="script.js"></script>
-  <script>
-    function scrollToSection(id) {
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: "smooth" });
-    }
-  </script>
 </body>
 </html>

@@ -13,7 +13,7 @@ const username =
 document.getElementById("username").innerText = username;
 socket.emit("join", username);
 
-// Dark mode
+// Tema escuro
 const themeToggle = document.getElementById("toggleThemeBtn");
 if (themeToggle) {
   themeToggle.onclick = () => {
@@ -63,14 +63,14 @@ document.getElementById("endBtn").addEventListener("click", () => {
   document.getElementById("endBtn").disabled = true;
 });
 
-// Atualizar estado
+// Atualizar estado do utilizador
 document.getElementById("userStatus").addEventListener("change", (e) => {
   const status = e.target.value;
   document.getElementById("status-indicator").innerText = `?? ${status}`;
   socket.emit("updateStatus", { username, status });
 });
 
-// Exportar CSV
+// Exportar histórico para CSV
 document.getElementById("exportBtn").addEventListener("click", () => {
   if (!historyData.length) return alert("Sem dados para exportar");
 
@@ -88,7 +88,7 @@ document.getElementById("exportBtn").addEventListener("click", () => {
   a.click();
 });
 
-// Apagar histórico (definitivo)
+// Apagar histórico do servidor
 document.getElementById("deleteHistory").addEventListener("click", async () => {
   if (confirm("Apagar histórico permanentemente?")) {
     await fetch("/api/delete-history", { method: "DELETE" });
@@ -105,12 +105,12 @@ document.getElementById("recoverHistory").addEventListener("click", async () => 
   renderHistory(data);
 });
 
-// Limpar da tela (visual apenas)
+// Limpar apenas visualmente
 document.getElementById("clearVisualHistory").addEventListener("click", () => {
   document.getElementById("historyList").innerHTML = "";
 });
 
-// Aplicar filtro de histórico
+// Aplicar filtro por utilizador
 document.getElementById("applyFilterBtn").addEventListener("click", () => {
   const selectedUser = document.getElementById("filterUser").value;
   const filtered = selectedUser
@@ -143,7 +143,7 @@ function renderHistory(data) {
   });
 }
 
-// Ativos em chamada
+// Atualizar lista de chamadas ativas
 socket.on("updateActiveCalls", (calls) => {
   activeCalls = calls;
   const list = document.getElementById("activeCallsList");
@@ -155,7 +155,7 @@ socket.on("updateActiveCalls", (calls) => {
   });
 });
 
-// ? Online com estado - corrigido para usar <span> com classe (evita símbolos inválidos)
+// Atualizar utilizadores online com status
 socket.on("updateOnlineUsersStatus", (users) => {
   const list = document.getElementById("onlineList");
   list.innerHTML = "";
@@ -170,7 +170,7 @@ socket.on("updateOnlineUsersStatus", (users) => {
   });
 });
 
-// Histórico
+// Atualizar histórico em tempo real
 socket.on("updateHistory", (data) => {
   historyData = data;
   renderHistory(data);

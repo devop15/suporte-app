@@ -95,7 +95,7 @@
 
     let isLogin = true;
 
-    // Tema escuro automático
+    // Tema escuro
     if (localStorage.getItem("theme") === "dark") {
       document.body.classList.add("dark-theme");
     }
@@ -133,7 +133,7 @@
         window.location.href = `index.html?user=${username}`;
       } else {
         const text = await res.text();
-        errorMsg.innerText = text || "Ocorreu um erro.";
+        errorMsg.innerText = text || "Erro ao autenticar.";
       }
     });
   </script>
