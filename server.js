@@ -8,10 +8,10 @@ const path = require("path");
 
 const PORT = process.env.PORT || 10000;
 
-// ✅ Conexão MongoDB Atlas (trocar se necessário)
+// ✅ URI do MongoDB (trocar se necessário)
 const MONGO_URI = "mongodb+srv://admin:admin123@cluster0.0tl6v.mongodb.net/suporteApp?retryWrites=true&w=majority";
 
-// Middlewares
+// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
@@ -22,9 +22,9 @@ mongoose.connect(MONGO_URI, {
   useUnifiedTopology: true
 })
 .then(() => console.log("✅ MongoDB conectado"))
-.catch((err) => console.error("Erro MongoDB:", err));
+.catch((err) => console.error("❌ Erro MongoDB:", err));
 
-// Modelos
+// Schemas
 const User = mongoose.model("User", new mongoose.Schema({
   username: String,
   password: String
@@ -37,13 +37,11 @@ const Call = mongoose.model("Call", new mongoose.Schema({
   end: Date
 }));
 
-// Estado da aplicação
+// Estado atual
 let onlineUsers = {};
 let activeCalls = [];
 
-// ====================
-// 🔐 API: Login & Registo
-// ====================
+// 🔐 API: Registo e Login
 app.post("/api/register", async (req, res) => {
   const { username, password } = req.body;
   const exists = await User.findOne({ username });
@@ -59,9 +57,7 @@ app.post("/api/login", async (req, res) => {
   res.send("Login efetuado com sucesso");
 });
 
-// ====================
-// 📂 Histórico de chamadas
-// ====================
+// 📁 Histórico
 app.get("/api/load-history", async (req, res) => {
   const history = await Call.find().sort({ start: -1 });
   res.json(history);
@@ -73,9 +69,7 @@ app.delete("/api/delete-history", async (req, res) => {
   res.sendStatus(204);
 });
 
-// ====================
-// 🔌 WebSocket
-// ====================
+// 🔌 WebSocket + Chat
 io.on("connection", (socket) => {
   let currentUser = null;
 
@@ -103,15 +97,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("endCall", async ({ username, client, start, end }) => {
-    activeCalls = activeCalls.filter(
-      (c) => !(c.username === username && c.client === client)
-    );
+    activeCalls = activeCalls.filter(c => !(c.username === username && c.client === client));
     if (onlineUsers[username]) {
-      onlineUsers[username].status = "Disponível";
+      onlineUsers[username].status = "disponível";
       updateOnlineUsers();
     }
     io.emit("updateActiveCalls", activeCalls);
-
     await Call.create({ username, client, start, end });
     const history = await Call.find().sort({ start: -1 });
     io.emit("updateHistory", history);
@@ -142,7 +133,7 @@ io.on("connection", (socket) => {
   }
 });
 
-// Start
+// 🟢 Iniciar servidor
 http.listen(PORT, () => {
-  console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
+  console.log(`🚀 Servidor online: http://localhost:${PORT}`);
 });

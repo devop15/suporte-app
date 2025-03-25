@@ -1,7 +1,7 @@
 {
   "name": "suporte-app-pro",
   "version": "1.0.0",
-  "description": "Aplicação de suporte com chamadas, histórico, chat e login integrado via MongoDB.",
+  "description": "Aplicação de suporte com chamadas, histórico, chat e login integrado com MongoDB.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -13,7 +13,8 @@
     "chamadas",
     "socket.io",
     "express",
-    "mongodb"
+    "mongodb",
+    "node"
   ],
   "author": "devop15",
   "license": "MIT",

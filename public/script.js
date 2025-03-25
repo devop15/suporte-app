@@ -76,11 +76,19 @@ document.getElementById("endBtn").addEventListener("click", () => {
 // ?? Atualizar estado do utilizador
 document.getElementById("userStatus").addEventListener("change", (e) => {
   const status = e.target.value;
-  document.getElementById("status-indicator").innerText = `?? ${status}`;
+  const btn = document.getElementById("statusIndicatorBtn");
+  btn.innerText = statusIcon(status) + " " + status;
   socket.emit("updateStatus", { username, status });
 });
 
-// ?? Exportar CSV
+function statusIcon(status) {
+  if (status === "em chamada") return "??";
+  if (status === "ocupado") return "?";
+  if (status === "ausente") return "??";
+  return "??";
+}
+
+// ?? Histórico
 document.getElementById("exportBtn").addEventListener("click", () => {
   if (!historyData.length) return alert("Sem dados para exportar");
 
@@ -98,7 +106,6 @@ document.getElementById("exportBtn").addEventListener("click", () => {
   a.click();
 });
 
-// ??? Apagar histórico
 document.getElementById("deleteHistory").addEventListener("click", async () => {
   if (confirm("Apagar histórico permanentemente?")) {
     await fetch("/api/delete-history", { method: "DELETE" });
@@ -107,7 +114,6 @@ document.getElementById("deleteHistory").addEventListener("click", async () => {
   }
 });
 
-// ?? Recuperar histórico
 document.getElementById("recoverHistory").addEventListener("click", async () => {
   const res = await fetch("/api/load-history");
   const data = await res.json();
@@ -115,107 +121,4 @@ document.getElementById("recoverHistory").addEventListener("click", async () => 
   renderHistory(data);
 });
 
-// ?? Limpar da tela
-document.getElementById("clearVisualHistory").addEventListener("click", () => {
-  document.getElementById("historyList").innerHTML = "";
-});
-
-// ?? Aplicar filtro
-document.getElementById("applyFilterBtn").addEventListener("click", () => {
-  const selectedUser = document.getElementById("filterUser").value;
-  const filtered = selectedUser
-    ? historyData.filter(item => item.username === selectedUser)
-    : historyData;
-  renderHistory(filtered);
-});
-
-// ?? Renderizar histórico
-function renderHistory(data) {
-  const list = document.getElementById("historyList");
-  list.innerHTML = "";
-  const usersSet = new Set();
-
-  data.forEach(item => {
-    const li = document.createElement("li");
-    const start = item.start ? new Date(item.start).toLocaleString("pt-PT") : "Desconhecido";
-    const end = item.end ? new Date(item.end).toLocaleString("pt-PT") : "Desconhecido";
-    li.textContent = `${item.username} - ${item.client} | Início: ${start} | Fim: ${end}`;
-    list.appendChild(li);
-    usersSet.add(item.username);
-  });
-
-  const filter = document.getElementById("filterUser");
-  filter.innerHTML = '<option value="">Todos</option>';
-  usersSet.forEach(u => {
-    const opt = document.createElement("option");
-    opt.value = opt.textContent = u;
-    filter.appendChild(opt);
-  });
-}
-
-// ?? Ativos em chamada
-socket.on("updateActiveCalls", (calls) => {
-  activeCalls = calls;
-  const list = document.getElementById("activeCallsList");
-  list.innerHTML = "";
-  calls.forEach(call => {
-    const li = document.createElement("li");
-    li.textContent = `${call.username} com ${call.client}`;
-    list.appendChild(li);
-  });
-});
-
-// ?? Atualizar utilizadores online
-socket.on("updateOnlineUsersStatus", (users) => {
-  const list = document.getElementById("onlineList");
-  list.innerHTML = "";
-
-  users.forEach(user => {
-    const li = document.createElement("li");
-    const dot = user.status === "em chamada"
-      ? '<span class="status-dot red"></span>'
-      : '<span class="status-dot green"></span>';
-    li.innerHTML = `${dot} ${user.username} (${user.status})`;
-    list.appendChild(li);
-  });
-});
-
-// ?? Histórico em tempo real
-socket.on("updateHistory", (data) => {
-  historyData = data;
-  renderHistory(data);
-});
-
-// ?? Notificações
-socket.on("notify", (msg) => {
-  const note = document.createElement("div");
-  note.className = "notification";
-  note.textContent = msg;
-  const container = document.getElementById("notifications");
-  container.appendChild(note);
-  setTimeout(() => container.removeChild(note), 5000);
-});
-
-// ?? Chat
-const chatForm = document.getElementById("chatForm");
-const chatInput = document.getElementById("chatInput");
-const chatMessages = document.getElementById("chatMessages");
-
-if (chatForm) {
-  chatForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const msg = chatInput.value.trim();
-    if (msg) {
-      socket.emit("chatMessage", { username, message: msg });
-      chatInput.value = "";
-    }
-  });
-
-  socket.on("chatMessage", (data) => {
-    const el = document.createElement("div");
-    el.className = "chat-message";
-    el.innerHTML = `<strong>${data.username}</strong>: ${data.message}`;
-    chatMessages.appendChild(el);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  });
-}
+document.getElementById("clearVisualHistory").addEventListener("click", () =>

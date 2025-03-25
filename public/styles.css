@@ -79,21 +79,31 @@ body {
 }
 .user-info {
   display: flex;
-  gap: 0.8rem;
+  gap: 1rem;
   align-items: center;
-}
-.status-tag {
-  background: var(--success);
-  color: white;
-  padding: 0.3rem 0.8rem;
-  border-radius: 999px;
-  font-size: 0.85rem;
 }
 .theme-btn {
   background: none;
   border: none;
   font-size: 1.3rem;
   cursor: pointer;
+}
+
+/* Novo botão de estado 🟢 */
+.status-button {
+  background: var(--success);
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  cursor: default;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+body.dark-theme .status-button {
+  background: #059669;
 }
 
 /* Seções */
