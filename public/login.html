@@ -7,11 +7,13 @@
   <link rel="stylesheet" href="styles.css" />
   <style>
     body {
+      margin: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      min-height: 100vh;
       background: var(--bg);
+      font-family: 'Segoe UI', sans-serif;
     }
     .login-container {
       background: var(--card-bg);
@@ -19,15 +21,16 @@
       border-radius: 12px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.08);
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
       text-align: center;
-    }
-    .login-container h1 {
-      margin-bottom: 1.5rem;
     }
     .login-container img {
       width: 60px;
       margin-bottom: 1rem;
+    }
+    .login-container h1 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
     }
     .login-container form {
       display: flex;
@@ -39,6 +42,8 @@
       font-size: 1rem;
       border: 1px solid var(--border);
       border-radius: 6px;
+      background: white;
+      color: var(--text);
     }
     .login-container button {
       background: var(--primary);
@@ -60,6 +65,9 @@
       color: var(--danger);
       font-size: 0.9rem;
     }
+    body.dark-theme {
+      background: #111827;
+    }
     body.dark-theme .login-container {
       background: #1f2937;
       color: #f3f4f6;
@@ -73,7 +81,7 @@
 </head>
 <body>
   <div class="login-container">
-    <img src="logo.png" alt="Logo" />
+    <img src="logo.png" alt="Logo Suporte" />
     <h1 id="formTitle">Entrar no Suporte</h1>
 
     <form id="loginForm">

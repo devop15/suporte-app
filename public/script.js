@@ -13,7 +13,7 @@ const username =
 document.getElementById("username").innerText = username;
 socket.emit("join", username);
 
-// Tema escuro
+// ?? Tema escuro
 const themeToggle = document.getElementById("toggleThemeBtn");
 if (themeToggle) {
   themeToggle.onclick = () => {
@@ -25,13 +25,23 @@ if (localStorage.getItem("theme") === "dark") {
   document.body.classList.add("dark-theme");
 }
 
-// Logout
+// ?? Logout
 document.getElementById("logoutBtn").addEventListener("click", () => {
   localStorage.removeItem("loggedInUser");
   window.location.href = "login.html";
 });
 
-// Iniciar chamada
+// ?? Navegação entre seções
+document.querySelectorAll(".nav-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+    document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+    document.getElementById(btn.dataset.section).classList.add("active");
+    btn.classList.add("active");
+  });
+});
+
+// ?? Iniciar chamada
 document.getElementById("startBtn").addEventListener("click", () => {
   const client = document.getElementById("clientName").value || "Sem cliente";
   startTime = new Date();
@@ -50,7 +60,7 @@ document.getElementById("startBtn").addEventListener("click", () => {
   }, 1000);
 });
 
-// Terminar chamada
+// ? Terminar chamada
 document.getElementById("endBtn").addEventListener("click", () => {
   const end = new Date();
   const client = document.getElementById("clientName").value || "Sem cliente";
@@ -63,14 +73,14 @@ document.getElementById("endBtn").addEventListener("click", () => {
   document.getElementById("endBtn").disabled = true;
 });
 
-// Atualizar estado
+// ?? Atualizar estado do utilizador
 document.getElementById("userStatus").addEventListener("change", (e) => {
   const status = e.target.value;
   document.getElementById("status-indicator").innerText = `?? ${status}`;
   socket.emit("updateStatus", { username, status });
 });
 
-// Exportar CSV
+// ?? Exportar CSV
 document.getElementById("exportBtn").addEventListener("click", () => {
   if (!historyData.length) return alert("Sem dados para exportar");
 
@@ -88,7 +98,7 @@ document.getElementById("exportBtn").addEventListener("click", () => {
   a.click();
 });
 
-// Apagar histórico
+// ??? Apagar histórico
 document.getElementById("deleteHistory").addEventListener("click", async () => {
   if (confirm("Apagar histórico permanentemente?")) {
     await fetch("/api/delete-history", { method: "DELETE" });
@@ -97,7 +107,7 @@ document.getElementById("deleteHistory").addEventListener("click", async () => {
   }
 });
 
-// Recuperar histórico do servidor
+// ?? Recuperar histórico
 document.getElementById("recoverHistory").addEventListener("click", async () => {
   const res = await fetch("/api/load-history");
   const data = await res.json();
@@ -105,12 +115,12 @@ document.getElementById("recoverHistory").addEventListener("click", async () => 
   renderHistory(data);
 });
 
-// Limpar da tela
+// ?? Limpar da tela
 document.getElementById("clearVisualHistory").addEventListener("click", () => {
   document.getElementById("historyList").innerHTML = "";
 });
 
-// Filtro por utilizador
+// ?? Aplicar filtro
 document.getElementById("applyFilterBtn").addEventListener("click", () => {
   const selectedUser = document.getElementById("filterUser").value;
   const filtered = selectedUser
@@ -119,7 +129,7 @@ document.getElementById("applyFilterBtn").addEventListener("click", () => {
   renderHistory(filtered);
 });
 
-// Render histórico com separador compatível
+// ?? Renderizar histórico
 function renderHistory(data) {
   const list = document.getElementById("historyList");
   list.innerHTML = "";
@@ -143,7 +153,7 @@ function renderHistory(data) {
   });
 }
 
-// Ativos em chamada
+// ?? Ativos em chamada
 socket.on("updateActiveCalls", (calls) => {
   activeCalls = calls;
   const list = document.getElementById("activeCallsList");
@@ -155,7 +165,7 @@ socket.on("updateActiveCalls", (calls) => {
   });
 });
 
-// Utilizadores online com estado
+// ?? Atualizar utilizadores online
 socket.on("updateOnlineUsersStatus", (users) => {
   const list = document.getElementById("onlineList");
   list.innerHTML = "";
@@ -170,13 +180,13 @@ socket.on("updateOnlineUsersStatus", (users) => {
   });
 });
 
-// Histórico realtime
+// ?? Histórico em tempo real
 socket.on("updateHistory", (data) => {
   historyData = data;
   renderHistory(data);
 });
 
-// Notificações
+// ?? Notificações
 socket.on("notify", (msg) => {
   const note = document.createElement("div");
   note.className = "notification";
@@ -186,7 +196,7 @@ socket.on("notify", (msg) => {
   setTimeout(() => container.removeChild(note), 5000);
 });
 
-// Chat
+// ?? Chat
 const chatForm = document.getElementById("chatForm");
 const chatInput = document.getElementById("chatInput");
 const chatMessages = document.getElementById("chatMessages");

@@ -8,42 +8,42 @@ const path = require("path");
 
 const PORT = process.env.PORT || 10000;
 
+// ✅ Conexão MongoDB Atlas (trocar se necessário)
+const MONGO_URI = "mongodb+srv://admin:admin123@cluster0.0tl6v.mongodb.net/suporteApp?retryWrites=true&w=majority";
+
+// Middlewares
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-// ✅ Coloca aqui a TUA URI MongoDB Atlas correta:
-const MONGO_URI = "mongodb+srv://admin:admin123@cluster0.0tl6v.mongodb.net/suporteApp?retryWrites=true&w=majority";
-
-// ✅ Conectar ao MongoDB
+// Conexão MongoDB
 mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-  .then(() => console.log("✅ MongoDB conectado com sucesso"))
-  .catch(err => console.error("Erro MongoDB:", err));
+.then(() => console.log("✅ MongoDB conectado"))
+.catch((err) => console.error("Erro MongoDB:", err));
 
-// ✅ Esquemas
-const UserSchema = new mongoose.Schema({
+// Modelos
+const User = mongoose.model("User", new mongoose.Schema({
   username: String,
   password: String
-});
+}));
 
-const CallSchema = new mongoose.Schema({
+const Call = mongoose.model("Call", new mongoose.Schema({
   username: String,
   client: String,
   start: Date,
   end: Date
-});
+}));
 
-const User = mongoose.model("User", UserSchema);
-const Call = mongoose.model("Call", CallSchema);
-
-// ✅ Estado local em memória
+// Estado da aplicação
 let onlineUsers = {};
 let activeCalls = [];
 
-// ✅ Autenticação: Registo & Login
+// ====================
+// 🔐 API: Login & Registo
+// ====================
 app.post("/api/register", async (req, res) => {
   const { username, password } = req.body;
   const exists = await User.findOne({ username });
@@ -59,19 +59,23 @@ app.post("/api/login", async (req, res) => {
   res.send("Login efetuado com sucesso");
 });
 
-// ✅ APIs para histórico
+// ====================
+// 📂 Histórico de chamadas
+// ====================
+app.get("/api/load-history", async (req, res) => {
+  const history = await Call.find().sort({ start: -1 });
+  res.json(history);
+});
+
 app.delete("/api/delete-history", async (req, res) => {
   await Call.deleteMany({});
   io.emit("updateHistory", []);
   res.sendStatus(204);
 });
 
-app.get("/api/load-history", async (req, res) => {
-  const history = await Call.find().sort({ start: -1 });
-  res.json(history);
-});
-
-// ✅ WebSocket: Chamadas, status, chat
+// ====================
+// 🔌 WebSocket
+// ====================
 io.on("connection", (socket) => {
   let currentUser = null;
 
@@ -88,7 +92,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("startCall", async ({ username, client, start }) => {
+  socket.on("startCall", ({ username, client, start }) => {
     activeCalls.push({ username, client, start });
     if (onlineUsers[username]) {
       onlineUsers[username].status = "em chamada";
@@ -100,10 +104,10 @@ io.on("connection", (socket) => {
 
   socket.on("endCall", async ({ username, client, start, end }) => {
     activeCalls = activeCalls.filter(
-      c => !(c.username === username && c.client === client)
+      (c) => !(c.username === username && c.client === client)
     );
     if (onlineUsers[username]) {
-      onlineUsers[username].status = "disponível";
+      onlineUsers[username].status = "Disponível";
       updateOnlineUsers();
     }
     io.emit("updateActiveCalls", activeCalls);
@@ -133,12 +137,12 @@ io.on("connection", (socket) => {
     io.emit("updateOnlineUsersStatus", list);
   }
 
-  function notify(msg) {
-    io.emit("notify", msg);
+  function notify(message) {
+    io.emit("notify", message);
   }
 });
 
-// ✅ Iniciar servidor
+// Start
 http.listen(PORT, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
 });

@@ -2,43 +2,43 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Suporte App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="app-layout">
+  <div class="layout">
     <!-- Sidebar -->
     <aside class="sidebar">
-      <div class="sidebar-logo">
-        <img src="logo.png" alt="Logo" />
-        <h1>Suporte</h1>
+      <div class="logo">
+        <img src="logo.png" alt="Suporte App" />
       </div>
-      <div class="sidebar-menu">
-        <button class="menu-item" id="logoutBtn">🚪 Sair</button>
-        <button class="menu-item" id="toggleThemeBtn">🌓 Tema</button>
-      </div>
+      <nav>
+        <button class="nav-btn active" data-section="dashboard">📞 Chamadas</button>
+        <button class="nav-btn" data-section="historico">🗂 Histórico</button>
+        <button class="nav-btn" data-section="chat">💬 Chat</button>
+        <button class="nav-btn" data-section="utilizadores">👥 Online</button>
+        <button id="logoutBtn" class="nav-btn danger">🚪 Sair</button>
+      </nav>
     </aside>
 
-    <!-- Área Principal -->
-    <main class="content-area">
-      <!-- Topbar -->
-      <div class="topbar">
-        <div class="app-title">Painel do Utilizador</div>
-        <div class="topbar-right">
-          <div class="status-tag" id="status-indicator">🟢 disponível</div>
-          <div><strong id="username">user</strong></div>
+    <!-- Conteúdo principal -->
+    <main class="main">
+      <header class="topbar">
+        <div class="user-info">
+          <span id="status-indicator" class="status-tag">🟢 disponível</span>
+          <span id="username">Utilizador</span>
         </div>
-      </div>
+        <button id="toggleThemeBtn" class="theme-btn">🌓</button>
+      </header>
 
-      <div class="main-content">
-        <!-- Chamadas -->
-        <h2>Gestão de Chamadas</h2>
+      <section id="dashboard" class="section active">
+        <h2>Chamadas</h2>
         <div class="status-display" id="statusDisplay">Nenhuma chamada ativa</div>
-        <div class="status-buttons">
+        <div class="call-controls">
           <input type="text" id="clientName" placeholder="Nome do cliente" />
-          <button id="startBtn" class="status-button start">📞 Iniciar Chamada</button>
-          <button id="endBtn" class="status-button end" disabled>✅ Terminar Chamada</button>
+          <button id="startBtn" class="start">📞 Iniciar</button>
+          <button id="endBtn" class="end" disabled>✅ Terminar</button>
           <span id="timerDisplay"></span>
           <select id="userStatus">
             <option value="disponível">Disponível</option>
@@ -46,47 +46,47 @@
             <option value="ocupado">Ocupado</option>
           </select>
         </div>
+        <h3>Chamadas Ativas</h3>
+        <ul id="activeCallsList"></ul>
+      </section>
 
-        <!-- Histórico -->
+      <section id="historico" class="section">
         <h2>Histórico de Chamadas</h2>
         <div class="history-actions">
           <select id="filterUser">
             <option value="">Todos</option>
           </select>
-          <button class="btn icon" id="applyFilterBtn">🔍 Aplicar filtro</button>
-          <button class="btn icon green" id="exportBtn">📤 Exportar CSV</button>
-          <button class="btn icon gray" id="clearVisualHistory">🧹 Limpar da tela</button>
-          <button class="btn icon red" id="deleteHistory">🗑️ Apagar histórico</button>
-          <button class="btn icon blue" id="recoverHistory">📂 Recuperar histórico</button>
+          <button id="applyFilterBtn">🔍 Filtrar</button>
+          <button id="exportBtn">📤 Exportar</button>
+          <button id="clearVisualHistory">🧹 Limpar Tela</button>
+          <button id="deleteHistory">🗑️ Apagar</button>
+          <button id="recoverHistory">📂 Recuperar</button>
         </div>
         <ul id="historyList"></ul>
+      </section>
 
-        <!-- Chamadas ativas -->
-        <h2>Utilizadores em chamada (ao vivo)</h2>
-        <ul id="activeCallsList"></ul>
-
-        <!-- Utilizadores online -->
-        <h2>Utilizadores Online</h2>
-        <ul id="onlineList"></ul>
-
-        <!-- Chat -->
-        <h2>Chat</h2>
+      <section id="chat" class="section">
+        <h2>Chat em tempo real</h2>
         <div id="chatMessages"></div>
         <form id="chatForm">
-          <input type="text" id="chatInput" placeholder="Escreve uma mensagem..." required />
+          <input type="text" id="chatInput" placeholder="Mensagem..." required />
           <button type="submit">Enviar</button>
         </form>
+      </section>
 
-        <!-- Notificações -->
-        <div class="notifications" id="notifications"></div>
-      </div>
+      <section id="utilizadores" class="section">
+        <h2>Utilizadores Online</h2>
+        <ul id="onlineList"></ul>
+      </section>
 
-      <!-- Footer -->
       <footer class="footer">
         &copy; 2025 Suporte App. Todos os direitos reservados.
       </footer>
     </main>
   </div>
+
+  <!-- Notificações -->
+  <div id="notifications" class="notifications"></div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="script.js"></script>
