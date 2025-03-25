@@ -5,21 +5,25 @@ const io = require("socket.io")(http);
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
+
 const PORT = process.env.PORT || 10000;
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-// ✅ Conexão MongoDB Atlas (SUBSTITUI COM TEUS DADOS!)
-mongoose.connect(
-  "mongodb+srv://USUARIO:SENHA@NOME_CLUSTER.mongodb.net/suporteApp?retryWrites=true&w=majority",
-  { useNewUrlParser: true, useUnifiedTopology: true }
-)
-  .then(() => console.log("✅ Conectado ao MongoDB Atlas"))
-  .catch((err) => console.error("Erro MongoDB:", err));
+// ✅ Coloca aqui a TUA URI MongoDB Atlas correta:
+const MONGO_URI = "mongodb+srv://admin:admin123@cluster0.0tl6v.mongodb.net/suporteApp?retryWrites=true&w=majority";
 
-// ✅ Modelos
+// ✅ Conectar ao MongoDB
+mongoose.connect(MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+  .then(() => console.log("✅ MongoDB conectado com sucesso"))
+  .catch(err => console.error("Erro MongoDB:", err));
+
+// ✅ Esquemas
 const UserSchema = new mongoose.Schema({
   username: String,
   password: String
@@ -35,27 +39,27 @@ const CallSchema = new mongoose.Schema({
 const User = mongoose.model("User", UserSchema);
 const Call = mongoose.model("Call", CallSchema);
 
-// ✅ Estado local
+// ✅ Estado local em memória
 let onlineUsers = {};
 let activeCalls = [];
 
-// 📌 API: Login e Registo
+// ✅ Autenticação: Registo & Login
 app.post("/api/register", async (req, res) => {
   const { username, password } = req.body;
   const exists = await User.findOne({ username });
   if (exists) return res.status(400).send("Utilizador já existe");
   await User.create({ username, password });
-  res.status(201).send("Conta criada");
+  res.status(201).send("Conta criada com sucesso");
 });
 
 app.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
   const user = await User.findOne({ username, password });
   if (!user) return res.status(401).send("Credenciais inválidas");
-  res.send("Login efetuado");
+  res.send("Login efetuado com sucesso");
 });
 
-// 📌 Histórico - API
+// ✅ APIs para histórico
 app.delete("/api/delete-history", async (req, res) => {
   await Call.deleteMany({});
   io.emit("updateHistory", []);
@@ -67,7 +71,7 @@ app.get("/api/load-history", async (req, res) => {
   res.json(history);
 });
 
-// ✅ WebSocket: chamadas, estado, chat
+// ✅ WebSocket: Chamadas, status, chat
 io.on("connection", (socket) => {
   let currentUser = null;
 
@@ -95,7 +99,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("endCall", async ({ username, client, start, end }) => {
-    activeCalls = activeCalls.filter(c => !(c.username === username && c.client === client));
+    activeCalls = activeCalls.filter(
+      c => !(c.username === username && c.client === client)
+    );
     if (onlineUsers[username]) {
       onlineUsers[username].status = "disponível";
       updateOnlineUsers();
@@ -120,11 +126,11 @@ io.on("connection", (socket) => {
   });
 
   function updateOnlineUsers() {
-    const statusList = Object.keys(onlineUsers).map(username => ({
+    const list = Object.keys(onlineUsers).map((username) => ({
       username,
       status: onlineUsers[username].status
     }));
-    io.emit("updateOnlineUsersStatus", statusList);
+    io.emit("updateOnlineUsersStatus", list);
   }
 
   function notify(msg) {
