@@ -198,15 +198,19 @@ select {
   box-shadow: 0 1px 3px var(--shadow);
 }
 
-/* ONLINE STATUS CORES */
-#onlineList li span {
-  font-weight: 500;
+/* ✅ Indicador de estado do utilizador */
+.status-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
 }
-#onlineList li span.green {
-  color: #10b981;
+.status-dot.green {
+  background-color: #10b981;
 }
-#onlineList li span.red {
-  color: #ef4444;
+.status-dot.red {
+  background-color: #ef4444;
 }
 
 .notifications {

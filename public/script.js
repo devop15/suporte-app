@@ -74,7 +74,7 @@ document.getElementById("userStatus").addEventListener("change", (e) => {
 document.getElementById("exportBtn").addEventListener("click", () => {
   if (!historyData.length) return alert("Sem dados para exportar");
 
-  let csv = "Utilizador,Cliente,Inicio,Fim\n";
+  let csv = "Utilizador,Cliente,Início,Fim\n";
   historyData.forEach(c => {
     const start = new Date(c.start).toLocaleString("pt-PT");
     const end = new Date(c.end).toLocaleString("pt-PT");
@@ -88,16 +88,16 @@ document.getElementById("exportBtn").addEventListener("click", () => {
   a.click();
 });
 
-// Apagar historico (definitivo)
+// Apagar histórico (definitivo)
 document.getElementById("deleteHistory").addEventListener("click", async () => {
-  if (confirm("Apagar historico permanentemente?")) {
+  if (confirm("Apagar histórico permanentemente?")) {
     await fetch("/api/delete-history", { method: "DELETE" });
     historyData = [];
     renderHistory([]);
   }
 });
 
-// Recuperar historico do servidor
+// Recuperar histórico do servidor
 document.getElementById("recoverHistory").addEventListener("click", async () => {
   const res = await fetch("/api/load-history");
   const data = await res.json();
@@ -110,7 +110,7 @@ document.getElementById("clearVisualHistory").addEventListener("click", () => {
   document.getElementById("historyList").innerHTML = "";
 });
 
-// Aplicar filtro de historico
+// Aplicar filtro de histórico
 document.getElementById("applyFilterBtn").addEventListener("click", () => {
   const selectedUser = document.getElementById("filterUser").value;
   const filtered = selectedUser
@@ -119,7 +119,7 @@ document.getElementById("applyFilterBtn").addEventListener("click", () => {
   renderHistory(filtered);
 });
 
-// Renderizar historico
+// Renderizar histórico
 function renderHistory(data) {
   const list = document.getElementById("historyList");
   list.innerHTML = "";
@@ -129,7 +129,7 @@ function renderHistory(data) {
     const li = document.createElement("li");
     const start = item.start ? new Date(item.start).toLocaleString("pt-PT") : "Desconhecido";
     const end = item.end ? new Date(item.end).toLocaleString("pt-PT") : "Desconhecido";
-    li.textContent = `${item.username} - ${item.client} ¡÷ ${start} ¡÷ ${end}`;
+    li.textContent = `${item.username} - ${item.client} ? ${start} ? ${end}`;
     list.appendChild(li);
     usersSet.add(item.username);
   });
@@ -155,26 +155,28 @@ socket.on("updateActiveCalls", (calls) => {
   });
 });
 
-// Online com estado ¡X ? sem simbolos invalidos
+// ? Online com estado - corrigido para usar <span> com classe (evita símbolos inválidos)
 socket.on("updateOnlineUsersStatus", (users) => {
   const list = document.getElementById("onlineList");
   list.innerHTML = "";
 
   users.forEach(user => {
     const li = document.createElement("li");
-    const statusDot = user.status === "em chamada" ? "??" : "??";
-    li.innerHTML = `<span>${statusDot} ${user.username} (${user.status})</span>`;
+    const dot = user.status === "em chamada"
+      ? '<span class="status-dot red"></span>'
+      : '<span class="status-dot green"></span>';
+    li.innerHTML = `${dot} ${user.username} (${user.status})`;
     list.appendChild(li);
   });
 });
 
-// Historico
+// Histórico
 socket.on("updateHistory", (data) => {
   historyData = data;
   renderHistory(data);
 });
 
-// Notificacoes
+// Notificações
 socket.on("notify", (msg) => {
   const note = document.createElement("div");
   note.className = "notification";
