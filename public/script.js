@@ -63,14 +63,14 @@ document.getElementById("endBtn").addEventListener("click", () => {
   document.getElementById("endBtn").disabled = true;
 });
 
-// Atualizar estado do utilizador
+// Atualizar estado
 document.getElementById("userStatus").addEventListener("change", (e) => {
   const status = e.target.value;
   document.getElementById("status-indicator").innerText = `?? ${status}`;
   socket.emit("updateStatus", { username, status });
 });
 
-// Exportar histórico para CSV
+// Exportar CSV
 document.getElementById("exportBtn").addEventListener("click", () => {
   if (!historyData.length) return alert("Sem dados para exportar");
 
@@ -88,7 +88,7 @@ document.getElementById("exportBtn").addEventListener("click", () => {
   a.click();
 });
 
-// Apagar histórico do servidor
+// Apagar histórico
 document.getElementById("deleteHistory").addEventListener("click", async () => {
   if (confirm("Apagar histórico permanentemente?")) {
     await fetch("/api/delete-history", { method: "DELETE" });
@@ -105,12 +105,12 @@ document.getElementById("recoverHistory").addEventListener("click", async () => 
   renderHistory(data);
 });
 
-// Limpar apenas visualmente
+// Limpar da tela
 document.getElementById("clearVisualHistory").addEventListener("click", () => {
   document.getElementById("historyList").innerHTML = "";
 });
 
-// Aplicar filtro por utilizador
+// Filtro por utilizador
 document.getElementById("applyFilterBtn").addEventListener("click", () => {
   const selectedUser = document.getElementById("filterUser").value;
   const filtered = selectedUser
@@ -119,7 +119,7 @@ document.getElementById("applyFilterBtn").addEventListener("click", () => {
   renderHistory(filtered);
 });
 
-// Renderizar histórico
+// Render histórico com separador compatível
 function renderHistory(data) {
   const list = document.getElementById("historyList");
   list.innerHTML = "";
@@ -129,7 +129,7 @@ function renderHistory(data) {
     const li = document.createElement("li");
     const start = item.start ? new Date(item.start).toLocaleString("pt-PT") : "Desconhecido";
     const end = item.end ? new Date(item.end).toLocaleString("pt-PT") : "Desconhecido";
-    li.textContent = `${item.username} - ${item.client} ? ${start} ? ${end}`;
+    li.textContent = `${item.username} - ${item.client} | Início: ${start} | Fim: ${end}`;
     list.appendChild(li);
     usersSet.add(item.username);
   });
@@ -143,7 +143,7 @@ function renderHistory(data) {
   });
 }
 
-// Atualizar lista de chamadas ativas
+// Ativos em chamada
 socket.on("updateActiveCalls", (calls) => {
   activeCalls = calls;
   const list = document.getElementById("activeCallsList");
@@ -155,7 +155,7 @@ socket.on("updateActiveCalls", (calls) => {
   });
 });
 
-// Atualizar utilizadores online com status
+// Utilizadores online com estado
 socket.on("updateOnlineUsersStatus", (users) => {
   const list = document.getElementById("onlineList");
   list.innerHTML = "";
@@ -170,7 +170,7 @@ socket.on("updateOnlineUsersStatus", (users) => {
   });
 });
 
-// Atualizar histórico em tempo real
+// Histórico realtime
 socket.on("updateHistory", (data) => {
   historyData = data;
   renderHistory(data);
