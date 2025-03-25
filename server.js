@@ -11,16 +11,15 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-// Conexão MongoDB
-mongoose
-  .connect("mongodb+srv://admin:admin123@CLUSTER.mongodb.net/suporteApp?retryWrites=true&w=majority", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
-  .then(() => console.log("✅ MongoDB conectado"))
-  .catch(err => console.error("Erro MongoDB:", err));
+// ✅ Conexão MongoDB Atlas (SUBSTITUI COM TEUS DADOS!)
+mongoose.connect(
+  "mongodb+srv://USUARIO:SENHA@NOME_CLUSTER.mongodb.net/suporteApp?retryWrites=true&w=majority",
+  { useNewUrlParser: true, useUnifiedTopology: true }
+)
+  .then(() => console.log("✅ Conectado ao MongoDB Atlas"))
+  .catch((err) => console.error("Erro MongoDB:", err));
 
-// Esquemas
+// ✅ Modelos
 const UserSchema = new mongoose.Schema({
   username: String,
   password: String
@@ -36,11 +35,11 @@ const CallSchema = new mongoose.Schema({
 const User = mongoose.model("User", UserSchema);
 const Call = mongoose.model("Call", CallSchema);
 
-// Estado em memória
+// ✅ Estado local
 let onlineUsers = {};
 let activeCalls = [];
 
-// Autenticação
+// 📌 API: Login e Registo
 app.post("/api/register", async (req, res) => {
   const { username, password } = req.body;
   const exists = await User.findOne({ username });
@@ -56,7 +55,7 @@ app.post("/api/login", async (req, res) => {
   res.send("Login efetuado");
 });
 
-// Histórico: apagar, carregar
+// 📌 Histórico - API
 app.delete("/api/delete-history", async (req, res) => {
   await Call.deleteMany({});
   io.emit("updateHistory", []);
@@ -68,7 +67,7 @@ app.get("/api/load-history", async (req, res) => {
   res.json(history);
 });
 
-// WebSocket
+// ✅ WebSocket: chamadas, estado, chat
 io.on("connection", (socket) => {
   let currentUser = null;
 
@@ -120,7 +119,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  async function updateOnlineUsers() {
+  function updateOnlineUsers() {
     const statusList = Object.keys(onlineUsers).map(username => ({
       username,
       status: onlineUsers[username].status
@@ -133,6 +132,7 @@ io.on("connection", (socket) => {
   }
 });
 
+// ✅ Iniciar servidor
 http.listen(PORT, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
 });
